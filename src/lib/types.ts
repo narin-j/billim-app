@@ -16,6 +16,27 @@ export type Library = {
   availability: Availability;
 };
 
+export type FavoriteBook = {
+  isbn13: string;
+  title: string;
+  author: string;
+  coverUrl: string | null;
+};
+
+export type FavoriteLibrary = {
+  libCode: string;
+  name: string;
+  address: string | null;
+  tel: string | null;
+  homepage: string | null;
+};
+
+/** 최근에 넣은 것이 앞에 온다 */
+export type Favorites = {
+  books: FavoriteBook[];
+  libraries: FavoriteLibrary[];
+};
+
 export type RankedLibrary = Library & {
   /** 1부터 시작하는 순번 */
   rank: number;
