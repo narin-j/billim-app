@@ -222,6 +222,8 @@ flowchart TD
 | 2026-10-27 | 즐겨찾기 대상은 책과 도서관 둘 다 | 사용자 결정 |
 | 2026-10-27 | 지도는 카카오맵 JavaScript SDK | 사용자 결정. 국내 지도와 지명이 정확하고 무료다 |
 | 2026-10-27 | 무료 서비스와 무료 플랜만 사용 | 사용자 제약 |
+| 2026-10-27 | Next.js 16 (App Router, `src/`) + TypeScript + Tailwind CSS 4, 테스트는 Vitest 5 | create-next-app 기본 구성. Route Handler로 정보나루 키를 숨길 수 있다 |
+| 2026-10-27 | Node 24 LTS (`.nvmrc`, `engines`) | 사용자 결정. Vitest 5가 Node 22.12 이상을 요구한다 |
 
 ## 10. 미결 사항
 
