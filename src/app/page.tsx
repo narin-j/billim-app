@@ -10,7 +10,7 @@ export default function Home() {
       </header>
       <main className="flex flex-1 flex-col justify-center gap-4 px-5 pb-24">
         <h1 className="text-2xl font-semibold">어떤 책을 빌리고 싶나요?</h1>
-        {/* 검색 결과(S2)는 F1에서 만든다. 빈 키워드는 pattern으로 막는다 */}
+        {/* 빈 키워드는 pattern으로 막는다 */}
         <form action="/search" method="get" className="flex gap-2">
           <label htmlFor="q" className="sr-only">
             제목 또는 저자
