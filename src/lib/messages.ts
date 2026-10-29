@@ -1,6 +1,7 @@
 // 화면 문구. docs/spec.md 6장과 같게 유지한다
 
 import type { LocationResult } from "./location";
+import type { Availability } from "./types";
 
 export const LOCATION_NEEDED = "내 위치를 알아야 가까운 도서관을 찾을 수 있어요.";
 
@@ -19,3 +20,11 @@ export const FAVORITES_EMPTY_LIBRARIES = "아직 즐겨찾기한 도서관이 �
 export const searchEmpty = (keyword: string) =>
   `'${keyword}'에 맞는 책을 찾지 못했어요. 제목이나 저자 이름을 바꿔 검색해 보세요.`;
 export const SEARCH_FAILED = "책 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.";
+
+export const NEARBY_EMPTY = "주변 도서관에는 이 책이 없어요.";
+export const NEARBY_FAILED = "도서관 정보를 불러오지 못했어요.";
+export const AVAILABILITY_LABEL: Record<Availability, string> = {
+  available: "대출 가능",
+  onLoan: "대출 중",
+  unknown: "확인 실패",
+};

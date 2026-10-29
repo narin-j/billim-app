@@ -4,6 +4,7 @@ import Link from "next/link";
 import { use, useCallback, useEffect, useState } from "react";
 import { requestLocation, type LocationResult } from "@/lib/location";
 import { LOCATION_FAILURE, LOCATION_NEEDED } from "@/lib/messages";
+import { NearbyLibraries } from "./NearbyLibraries";
 
 type State = { status: "loading" } | LocationResult;
 
@@ -32,12 +33,7 @@ export function LocationGate({ params }: { params: Promise<{ isbn13: string }> }
   }
 
   if (state.status === "ok") {
-    // S4는 정보나루 응답을 확인한 뒤 만든다
-    return (
-      <p className="p-6 text-center opacity-70">
-        위치를 확인했어요. ISBN {isbn13}을 가진 주변 도서관 목록은 정보나루 API를 연결한 뒤 보여 줘요.
-      </p>
-    );
+    return <NearbyLibraries isbn13={isbn13} me={state.location} />;
   }
 
   // S3. 위치 안내
