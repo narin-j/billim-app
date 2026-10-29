@@ -205,12 +205,12 @@ flowchart TD
 
 | 항목 | 상태 | 확인 결과 |
 |---|---|---|
-| 정보나루 인증키 발급 | 발급됨, 미활성화 | 2026-10-27 `srchBooks` 호출 시 `{"response":{"errCode":"vitalizationErr","error":"API 활성화 상태가아닙니다."}}`. **오류도 HTTP 200으로 온다** → 상태 코드가 아니라 `response.error`로 실패를 판단해야 한다 |
-| 일일 호출 한도 | 미확인 | |
-| `bookExist`가 대출 가능 여부도 주는지, 실시간인지 전날 기준인지 | 미확인 | |
-| `libSrchByBook` 응답에 도서관 좌표(위도/경도)가 있는지 | 미확인 | |
-| `region` 코드 체계 (위치 → 지역 코드 변환 방법) | 미확인 | |
-| `srchBooks` 응답 필드 (표지, ISBN13 포함 여부) | 미확인 | |
+| 정보나루 인증키 발급 | 활성화됨 (2026-10-29) | 2026-10-27에는 `{"response":{"errCode":"vitalizationErr","error":"API 활성화 상태가아닙니다."}}`. **오류도 HTTP 200으로 온다** → 상태 코드가 아니라 `response.error`로 실패를 판단해야 한다. 2026-10-29 정상 응답 확인 |
+| 일일 호출 한도 | 미확인 | 응답에는 한도 정보가 없다. 정보나루 마이페이지에서 확인한다 |
+| `bookExist`가 대출 가능 여부도 주는지, 실시간인지 전날 기준인지 | 대출 가능 여부: 있음 / 기준 시각: 미확인 | `{"response":{"request":{...},"result":{"hasBook":"Y","loanAvailable":"Y"}}}`. 값은 `"Y"`/`"N"` 문자열. 응답에 기준 시각이 없다 → F3 직접 확인(도서관 홈페이지와 비교)으로 판단한다 |
+| `libSrchByBook` 응답에 도서관 좌표(위도/경도)가 있는지 | 있음 | `response.libs[].lib` 안에 `libCode`, `libName`, `address`, `tel`, `fax`, `latitude`, `longitude`, `homepage`, `closed`, `operatingTime`. 좌표는 **문자열**(`"37.492994"`). `numFound`(전체 수), `resultNum`(이번 쪽 수). 소장 도서관이 없으면 `numFound: 0, libs: []`. `region`이 **필수**: 빼면 `{"errCode":"regionCodeErr","error":"지역코드를 확인해 주시기 바랍니다."}` |
+| `region` 코드 체계 (위치 → 지역 코드 변환 방법) | 일부 확인 | `region=11`(서울) 동작. `dtl_region=11350`처럼 시군구 5자리도 받는다. 위치 → 코드 변환 방법은 F3에서 정한다 (Q4) |
+| `srchBooks` 응답 필드 (표지, ISBN13 포함 여부) | 있음 | `response.numFound`(전체 수), `response.docs[].doc` 안에 `bookname`, `authors`, `publisher`, `publication_year`, `isbn13`, `bookImageURL`, `bookDtlUrl`, `loan_count`(문자열) 등. 기본 정렬은 대출 많은 순. 결과 없으면 `numFound: 0, docs: []`. `keyword` 하나로 제목과 저자가 함께 검색된다(`keyword=한강` → 저자 한강 책). 표지 주소가 **`http://`인 경우가 있다**(https 페이지에서 섞인 콘텐츠). `bookname`에 부제가 `:`로 붙고 끝에 공백이 있을 수 있다(`"작별하지 않는다 :한강 장편소설 "`), `authors`에 `지은이: ` 같은 접두가 붙을 수 있다 |
 | (다음 버전) 카카오맵 JavaScript SDK 무료 한도와 키 발급, 도메인 등록 조건 | 미확인 | |
 
 ## 9. 결정 기록
