@@ -43,3 +43,20 @@ export type RankedLibrary = Library & {
   /** 내 위치에서의 직선거리(km). 좌표를 모르면 null */
   distanceKm: number | null;
 };
+
+/** 검색 결과의 책 1권 */
+export type BookSummary = {
+  isbn13: string;
+  title: string;
+  author: string;
+  publisher: string | null;
+  /** 출판 연도. 모르면 null */
+  year: string | null;
+  coverUrl: string | null;
+};
+
+export type BookSearchPage = {
+  /** 검색에 맞는 전체 책 수 */
+  total: number;
+  books: BookSummary[];
+};
