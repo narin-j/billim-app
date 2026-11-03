@@ -1,7 +1,8 @@
 import { distanceKm } from "./distance";
 import type { Availability, LatLng, Library } from "./types";
 
-const AVAILABILITY_ORDER: Record<Availability, number> = {
+/** 대출 가능 → 대출 중 → 확인 실패 */
+export const AVAILABILITY_ORDER: Record<Availability, number> = {
   available: 0,
   onLoan: 1,
   unknown: 2,
