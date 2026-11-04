@@ -1,4 +1,6 @@
 import { FavoritesCount } from "@/components/FavoritesCount";
+import { SearchScopeOptions } from "@/components/SearchScopeOptions";
+import { DEFAULT_SEARCH_SCOPE } from "@/lib/searchScope";
 
 /** S1. 홈 (검색) */
 export default function Home() {
@@ -11,22 +13,25 @@ export default function Home() {
       <main className="flex flex-1 flex-col justify-center gap-4 px-5 pb-24">
         <h1 className="text-2xl font-semibold">어떤 책을 빌리고 싶나요?</h1>
         {/* 빈 키워드는 pattern으로 막는다 */}
-        <form action="/search" method="get" className="flex gap-2">
-          <label htmlFor="q" className="sr-only">
-            제목 또는 저자
-          </label>
-          <input
-            id="q"
-            name="q"
-            type="search"
-            required
-            pattern=".*\S.*"
-            placeholder="제목 또는 저자"
-            className="min-w-0 flex-1 rounded-xl border px-4 py-3"
-          />
-          <button type="submit" className="rounded-xl border px-4 py-3 font-semibold">
-            검색
-          </button>
+        <form action="/search" method="get" className="grid gap-3">
+          <SearchScopeOptions value={DEFAULT_SEARCH_SCOPE} />
+          <div className="flex gap-2">
+            <label htmlFor="q" className="sr-only">
+              검색어
+            </label>
+            <input
+              id="q"
+              name="q"
+              type="search"
+              required
+              pattern=".*\S.*"
+              placeholder="검색어"
+              className="min-w-0 flex-1 rounded-xl border px-4 py-3"
+            />
+            <button type="submit" className="rounded-xl border px-4 py-3 font-semibold">
+              검색
+            </button>
+          </div>
         </form>
         <p className="text-sm opacity-70">도서관 정보나루 데이터 기준</p>
       </main>
