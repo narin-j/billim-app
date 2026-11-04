@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getSessionStorage } from "@/lib/browserStorage";
 import { isFavoriteBook } from "@/lib/favorites";
-import { FAVORITES_SAVE_FAILED, SEARCH_FAILED, searchEmpty } from "@/lib/messages";
+import { FAVORITES_SAVE_FAILED, SEARCH_FAILED, searchCount, searchEmpty } from "@/lib/messages";
 import { loadSearch, saveSearch } from "@/lib/searchCache";
 import type { SearchScope } from "@/lib/searchScope";
 import type { BookSummary } from "@/lib/types";
@@ -131,7 +131,7 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
 
   return (
     <>
-      <p className="px-4 pt-3 text-sm text-muted">검색 결과 {state.total.toLocaleString("ko-KR")}권</p>
+      <p className="px-4 pt-3 text-sm text-muted">{searchCount(scope, state.total)}</p>
 
       {saveFailed && (
         <p role="alert" className="notice mx-4 mt-3">

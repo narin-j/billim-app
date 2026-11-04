@@ -5,11 +5,10 @@ import { use } from "react";
 import { parseSearchScope } from "@/lib/searchScope";
 import { BackIcon } from "./BackIcon";
 import { SearchResults } from "./SearchResults";
-import { SearchScopeOptions } from "./SearchScopeOptions";
 
 const first = (raw: string | string[] | undefined) => (Array.isArray(raw) ? raw[0] : raw);
 
-/** S2 머리(뒤로, 검색창, 범위)와 결과. 키워드나 범위가 바뀌면 결과 상태를 새로 시작한다 */
+/** S2 머리(뒤로, 검색창)와 결과. 범위는 S1에서만 고르고 여기서는 그대로 쓴다. 키워드나 범위가 바뀌면 결과 상태를 새로 시작한다 */
 export function SearchView({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const query = use(searchParams);
   const keyword = first(query.q)?.trim() ?? "";
@@ -18,7 +17,9 @@ export function SearchView({ searchParams }: { searchParams: Promise<Record<stri
   return (
     <>
       <header className="px-3 pt-3 pb-1">
-        <form action="/search" method="get" className="grid gap-3">
+        <form action="/search" method="get">
+          {/* 다시 검색해도 지금 범위를 그대로 쓴다 */}
+          <input type="hidden" name="by" value={scope} />
           <div className="flex items-center gap-2">
             <Link href="/" aria-label="뒤로" className="icon-btn">
               <BackIcon />
@@ -40,10 +41,6 @@ export function SearchView({ searchParams }: { searchParams: Promise<Record<stri
             <button type="submit" className="btn btn-primary">
               검색
             </button>
-          </div>
-          {/* S2에서는 범위를 누르면 바로 다시 검색한다. requestSubmit이라 빈 검색어 검사도 거친다 */}
-          <div className="pl-[52px]" onChange={(e) => (e.target as HTMLInputElement).form?.requestSubmit()}>
-            <SearchScopeOptions key={scope} value={scope} />
           </div>
         </form>
       </header>

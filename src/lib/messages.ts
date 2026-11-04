@@ -20,6 +20,9 @@ export const FAVORITES_EMPTY_LIBRARIES = "아직 즐겨찾기한 도서관이 �
 
 export const searchEmpty = (keyword: string, scope: SearchScope) =>
   `${SEARCH_SCOPE_LABEL[scope]} '${keyword}'에 맞는 책을 찾지 못했어요. 검색어나 범위를 바꿔 검색해 보세요.`;
+const SEARCH_SCOPE_WITH: Record<SearchScope, string> = { title: "제목으로", author: "저자로", publisher: "출판사로" };
+export const searchCount = (scope: SearchScope, total: number) =>
+  `${SEARCH_SCOPE_WITH[scope]} 찾은 결과 ${total.toLocaleString("ko-KR")}권`;
 export const SEARCH_FAILED = "책 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.";
 
 export const NEARBY_EMPTY = "주변 도서관에는 이 책이 없어요.";
