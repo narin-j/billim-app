@@ -56,21 +56,25 @@ export function FavoritesView() {
           ) : (
             <ul className="grid gap-3">
               {favorites.books.map((book) => (
-                <li key={book.isbn13} className="card flex items-start gap-3 p-3">
-                  {book.coverUrl ? (
-                    // 표지 주소는 외부 도메인이라 next/image 설정 없이 그대로 쓴다
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={book.coverUrl} alt="" className="h-[70px] w-[52px] rounded-lg object-cover" />
-                  ) : (
-                    <div aria-hidden className="h-[70px] w-[52px] rounded-lg bg-line" />
-                  )}
-                  <div className="grid min-w-0 flex-1 justify-items-start gap-1.5">
-                    <span className="font-semibold">{book.title}</span>
-                    <span className="text-sm text-muted">{book.author}</span>
-                    <Link href={`/books/${book.isbn13}/libraries`} className="btn btn-primary min-h-11 text-sm">
-                      주변에서 찾기
-                    </Link>
-                  </div>
+                <li key={book.isbn13} className="card flex items-center gap-1 p-1.5">
+                  {/* 검색 결과처럼 카드를 누르면 S4로 간다 */}
+                  <Link
+                    href={`/books/${book.isbn13}/libraries`}
+                    className="row-tap flex min-w-0 flex-1 items-start gap-3 rounded-2xl p-1.5"
+                  >
+                    {book.coverUrl ? (
+                      // 표지 주소는 외부 도메인이라 next/image 설정 없이 그대로 쓴다
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={book.coverUrl} alt="" className="h-[70px] w-[52px] shrink-0 rounded-lg object-cover" />
+                    ) : (
+                      <div aria-hidden className="h-[70px] w-[52px] shrink-0 rounded-lg bg-line" />
+                    )}
+                    <span className="grid min-w-0 gap-1">
+                      <span className="font-semibold">{book.title}</span>
+                      <span className="text-sm text-muted">{book.author}</span>
+                      <span className="text-sm text-accent">주변 도서관 찾기 ›</span>
+                    </span>
+                  </Link>
                   <button
                     type="button"
                     onClick={() => save(removeBook(book.isbn13))}
