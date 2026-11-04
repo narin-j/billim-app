@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackIcon } from "@/components/BackIcon";
 import { FavoritesView } from "@/components/FavoritesView";
 
 /** S5. 즐겨찾기 */
@@ -7,7 +8,7 @@ export default function FavoritesPage() {
     <>
       <header className="flex items-center gap-1 px-3 pt-3 pb-1">
         <Link href="/" aria-label="뒤로" className="icon-btn">
-          ←
+          <BackIcon />
         </Link>
         <h1 className="font-display text-xl">즐겨찾기</h1>
       </header>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useFavorites } from "@/lib/useFavorites";
+import { StarIcon } from "./StarIcon";
 
 /** S1 오른쪽 위 즐겨찾기 바로가기 */
 export function FavoritesCount() {
@@ -9,7 +10,7 @@ export function FavoritesCount() {
   const count = favorites.books.length + favorites.libraries.length;
   return (
     <Link href="/favorites" className="pill text-sm" aria-label={`즐겨찾기 ${ready ? count : ""}개`}>
-      ★ {ready ? count : ""}
+      <StarIcon filled className="size-4" /> {ready ? count : ""}
     </Link>
   );
 }

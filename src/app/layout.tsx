@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Gowun_Dodum, Jua } from "next/font/google";
+import { Suspense } from "react";
+import { NavigationTracker } from "@/components/NavigationTracker";
 import "./globals.css";
 
 // 한글 글꼴은 subsets에 한글이 없어 미리 받지 않고, 쓰는 글자 범위만 받는다
@@ -23,7 +25,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className={`${gowun.variable} ${jua.variable} h-full font-sans antialiased`}>
-      <body className="mx-auto flex min-h-full w-full max-w-md flex-col">{children}</body>
+      <body className="mx-auto flex min-h-full w-full max-w-md flex-col">
+        {/* usePathname은 주소마다 달라서 Suspense 안에서 읽는다 (Cache Components). 그리는 것은 없다 */}
+        <Suspense fallback={null}>
+          <NavigationTracker />
+        </Suspense>
+        {children}
+      </body>
     </html>
   );
 }
