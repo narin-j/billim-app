@@ -40,7 +40,8 @@ export function SearchView({ searchParams }: { searchParams: Promise<Record<stri
               검색
             </button>
           </div>
-          <div className="pl-9">
+          {/* S2에서는 범위를 누르면 바로 다시 검색한다. requestSubmit이라 빈 검색어 검사도 거친다 */}
+          <div className="pl-9" onChange={(e) => (e.target as HTMLInputElement).form?.requestSubmit()}>
             <SearchScopeOptions key={scope} value={scope} />
           </div>
         </form>
