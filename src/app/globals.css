@@ -91,6 +91,9 @@ body {
   background-color: var(--background);
   background-image: var(--knit);
   color: var(--foreground);
+  /* 한글은 단어 단위로 줄을 바꾼다. 공백 없이 긴 이름(서울특별시교육청…도서관)이 칸을 넘칠 때만 단어 안에서 끊는다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 @layer components {
