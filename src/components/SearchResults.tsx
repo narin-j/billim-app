@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getSessionStorage } from "@/lib/browserStorage";
 import { isFavoriteBook } from "@/lib/favorites";
 import { FAVORITES_SAVE_FAILED, SEARCH_FAILED, searchEmpty } from "@/lib/messages";
+import { loadSearch, saveSearch } from "@/lib/searchCache";
 import type { SearchScope } from "@/lib/searchScope";
 import type { BookSummary } from "@/lib/types";
 import { useFavorites } from "@/lib/useFavorites";
@@ -28,8 +30,22 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
   const { favorites, addBook, removeBook } = useFavorites();
   const [saveFailed, setSaveFailed] = useState(false);
 
+  // 되살린 목록을 그린 뒤 옮겨 갈 스크롤 위치
+  const restoreScroll = useRef<number | null>(null);
+
   const loadFirst = useCallback(() => {
     let cancelled = false;
+    // 책을 골랐다 돌아온 경우: 저장해 둔 목록이 있으면 정보나루를 다시 부르지 않는다
+    const cached = loadSearch(getSessionStorage(), scope, keyword, Date.now());
+    if (cached) {
+      restoreScroll.current = cached.scrollY;
+      Promise.resolve().then(() => {
+        if (!cancelled) setState({ status: "ok", total: cached.total, books: cached.books, page: cached.page, more: "idle" });
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
     fetchPage(keyword, scope, 1).then(
       ({ total, books, page }) => {
         if (!cancelled) setState({ status: "ok", total, books, page, more: "idle" });
@@ -44,6 +60,25 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
   }, [keyword, scope]);
 
   useEffect(loadFirst, [loadFirst]);
+
+  // 목록이 바뀌면(첫 쪽, 더 보기) 지금 스크롤 위치와 함께 저장한다
+  const okState = state.status === "ok" ? state : null;
+  const save = useCallback(() => {
+    if (!okState) return;
+    const { total, books, page } = okState;
+    saveSearch(getSessionStorage(), scope, keyword, { total, books, page, scrollY: window.scrollY }, Date.now());
+  }, [okState, scope, keyword]);
+
+  useEffect(() => {
+    if (okState?.more === "idle") save();
+  }, [okState, save]);
+
+  useEffect(() => {
+    if (!okState || restoreScroll.current === null) return;
+    const y = restoreScroll.current;
+    restoreScroll.current = null;
+    requestAnimationFrame(() => window.scrollTo(0, y));
+  }, [okState]);
 
   const retry = () => {
     setState({ status: "loading" });
@@ -109,7 +144,12 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
           const favorite = isFavoriteBook(favorites, book.isbn13);
           return (
             <li key={book.isbn13} className="card flex items-start gap-1 p-3">
-              <Link href={`/books/${book.isbn13}/libraries`} className="flex min-w-0 flex-1 items-start gap-3 rounded-2xl">
+              <Link
+                href={`/books/${book.isbn13}/libraries`}
+                // 화면을 옮기기 전에 지금 스크롤 위치를 저장해 둔다 (뒤로 오면 되살린다)
+                onClick={save}
+                className="flex min-w-0 flex-1 items-start gap-3 rounded-2xl"
+              >
                 {book.coverUrl ? (
                   // 표지 주소는 외부 도메인이라 next/image 설정 없이 그대로 쓴다
                   // eslint-disable-next-line @next/next/no-img-element
