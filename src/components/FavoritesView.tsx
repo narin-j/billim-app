@@ -30,7 +30,7 @@ export function FavoritesView() {
       role="tab"
       aria-selected={tab === value}
       onClick={() => setTab(value)}
-      className={`flex-1 rounded-lg border py-2 ${tab === value ? "bg-foreground text-background" : ""}`}
+      className="chip flex-1"
     >
       {label} ({ready ? count : "…"})
     </button>
@@ -38,36 +38,36 @@ export function FavoritesView() {
 
   return (
     <>
-      <div role="tablist" className="flex gap-2 px-4 pt-3">
+      <div role="tablist" className="flex gap-3 px-4 pt-3">
         {tabButton("books", "책", favorites.books.length)}
         {tabButton("libraries", "도서관", favorites.libraries.length)}
       </div>
 
       {saveFailed && (
-        <p role="alert" className="mx-4 mt-3 rounded-lg border px-3 py-2 text-sm">
+        <p role="alert" className="notice mx-4 mt-3">
           {FAVORITES_SAVE_FAILED}
         </p>
       )}
 
-      <div className="flex-1 px-4 py-2">
+      <div className="flex-1 px-4 py-3">
         {!ready ? null : tab === "books" ? (
           favorites.books.length === 0 ? (
-            <p className="py-12 text-center opacity-70">{FAVORITES_EMPTY_BOOKS}</p>
+            <p className="py-12 text-center text-muted">{FAVORITES_EMPTY_BOOKS}</p>
           ) : (
-            <ul>
+            <ul className="grid gap-3">
               {favorites.books.map((book) => (
-                <li key={book.isbn13} className="flex items-start gap-3 border-b py-3">
+                <li key={book.isbn13} className="card flex items-start gap-3 p-3">
                   {book.coverUrl ? (
                     // 표지 주소는 외부 도메인이라 next/image 설정 없이 그대로 쓴다
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={book.coverUrl} alt="" className="h-[70px] w-[52px] rounded object-cover" />
+                    <img src={book.coverUrl} alt="" className="h-[70px] w-[52px] rounded-lg object-cover" />
                   ) : (
-                    <div aria-hidden className="h-[70px] w-[52px] rounded bg-foreground/10" />
+                    <div aria-hidden className="h-[70px] w-[52px] rounded-lg bg-line" />
                   )}
-                  <div className="grid min-w-0 flex-1 justify-items-start gap-1">
+                  <div className="grid min-w-0 flex-1 justify-items-start gap-1.5">
                     <span className="font-semibold">{book.title}</span>
-                    <span className="text-sm opacity-70">{book.author}</span>
-                    <Link href={`/books/${book.isbn13}/libraries`} className="rounded-lg border px-3 py-1 text-sm">
+                    <span className="text-sm text-muted">{book.author}</span>
+                    <Link href={`/books/${book.isbn13}/libraries`} className="btn btn-primary min-h-11 text-sm">
                       주변에서 찾기
                     </Link>
                   </div>
@@ -75,7 +75,7 @@ export function FavoritesView() {
                     type="button"
                     onClick={() => save(removeBook(book.isbn13))}
                     aria-label={`${book.title} 즐겨찾기에서 빼기`}
-                    className="px-2 text-xl"
+                    className="icon-btn star"
                   >
                     ★
                   </button>
@@ -84,14 +84,18 @@ export function FavoritesView() {
             </ul>
           )
         ) : favorites.libraries.length === 0 ? (
-          <p className="py-12 text-center opacity-70">{FAVORITES_EMPTY_LIBRARIES}</p>
+          <p className="py-12 text-center text-muted">{FAVORITES_EMPTY_LIBRARIES}</p>
         ) : (
-          <ul>
+          <ul className="grid gap-3">
             {favorites.libraries.map((library) => (
-              <li key={library.libCode} className="flex items-center gap-3 border-b py-3">
-                <button type="button" onClick={() => setOpened(library)} className="grid min-w-0 flex-1 text-left">
+              <li key={library.libCode} className="card flex items-center gap-1 py-1 pr-2 pl-1">
+                <button
+                  type="button"
+                  onClick={() => setOpened(library)}
+                  className="card-tap grid min-w-0 flex-1 rounded-[18px] px-4 py-3 text-left"
+                >
                   <span className="font-semibold">{library.name}</span>
-                  <span className="text-sm opacity-70">
+                  <span className="text-sm text-muted">
                     {[library.address, library.tel].filter(Boolean).join(" · ") || "주소와 전화 정보 없음"}
                   </span>
                 </button>
@@ -99,7 +103,7 @@ export function FavoritesView() {
                   type="button"
                   onClick={() => save(removeLibrary(library.libCode))}
                   aria-label={`${library.name} 즐겨찾기에서 빼기`}
-                  className="px-2 text-xl"
+                  className="icon-btn star"
                 >
                   ★
                 </button>
@@ -109,7 +113,7 @@ export function FavoritesView() {
         )}
       </div>
 
-      <p className="px-4 pb-6 text-xs opacity-70">{FAVORITES_DEVICE_ONLY}</p>
+      <p className="px-4 pb-6 text-xs text-muted">{FAVORITES_DEVICE_ONLY}</p>
 
       {opened && (
         <LibrarySheet

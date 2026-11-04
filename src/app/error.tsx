@@ -6,13 +6,13 @@ import Link from "next/link";
 export default function Error({ retry }: { error: unknown; retry: () => void }) {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-      <h1 className="text-lg font-semibold">문제가 생겨 화면을 보여 주지 못했어요.</h1>
-      <p className="opacity-80">잠시 후 다시 시도해 주세요.</p>
-      <div className="flex gap-2">
-        <button type="button" onClick={() => retry()} className="rounded-xl border px-4 py-2 font-semibold">
+      <h1 className="font-display text-xl">문제가 생겨 화면을 보여 주지 못했어요.</h1>
+      <p className="text-muted">잠시 후 다시 시도해 주세요.</p>
+      <div className="flex gap-3">
+        <button type="button" onClick={() => retry()} className="btn btn-primary">
           다시 시도
         </button>
-        <Link href="/" className="rounded-xl border px-4 py-2">
+        <Link href="/" className="btn">
           처음으로
         </Link>
       </div>

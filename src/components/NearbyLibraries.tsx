@@ -92,14 +92,14 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
   };
 
   if (state.status === "loading") {
-    return <p className="p-6 text-center opacity-70">주변 도서관을 확인하고 있어요…</p>;
+    return <p className="p-6 text-center text-muted">주변 도서관을 확인하고 있어요…</p>;
   }
 
   if (state.status === "error") {
     return (
       <section className="flex flex-col items-center gap-3 p-6 text-center">
         <p>{NEARBY_FAILED}</p>
-        <button type="button" onClick={retry} className="rounded-xl border px-4 py-2 font-semibold">
+        <button type="button" onClick={retry} className="btn btn-primary">
           다시 시도
         </button>
       </section>
@@ -107,7 +107,7 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
   }
 
   if (state.libraries.length === 0) {
-    return <p className="p-6 text-center opacity-70">{NEARBY_EMPTY}</p>;
+    return <p className="p-6 text-center text-muted">{NEARBY_EMPTY}</p>;
   }
 
   const available = state.libraries.filter((l) => l.availability === "available").length;
@@ -116,25 +116,25 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
 
   return (
     <>
-      <div className="border-b px-4 py-3">
-        <p className="font-semibold">
+      <div className="card mx-4 mt-3 grid gap-0.5 px-5 py-4">
+        <p className="font-display">
           소장 {state.total.toLocaleString("ko-KR")}곳 · 확인한 {state.libraries.length}곳 중 대출 가능 {available}곳
         </p>
-        <p className="text-sm opacity-70">확인 시각 {formatTime(state.checkedAt)}</p>
+        <p className="text-sm text-muted">확인 시각 {formatTime(state.checkedAt)}</p>
       </div>
 
-      <ol className="px-4">
+      <ol className="grid gap-3 px-4 py-3">
         {availableFirst(state.libraries).map((library) => (
-          <li key={library.libCode} className="border-b">
+          <li key={library.libCode}>
             <button
               type="button"
               onClick={() => openSheet(library.libCode)}
               aria-haspopup="dialog"
-              className="grid w-full gap-1 py-3 text-left"
+              className="card card-tap grid w-full gap-1.5 px-5 py-4 text-left"
             >
               <span className="flex items-baseline gap-2">
                 <span className="min-w-0 flex-1 font-semibold">{library.name}</span>
-                <span className="shrink-0 text-sm">{formatDistance(library.distanceKm)}</span>
+                <span className="shrink-0 text-sm text-muted tabular-nums">{formatDistance(library.distanceKm)}</span>
               </span>
               <AvailabilityStatus availability={library.availability} />
             </button>
@@ -143,13 +143,13 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
       </ol>
 
       {state.hasMore && (
-        <div className="flex flex-col items-center gap-2 p-4">
+        <div className="flex flex-col items-center gap-2 px-4 pt-1 pb-6">
           {state.more === "error" && <p className="text-sm">{NEARBY_FAILED}</p>}
           <button
             type="button"
             onClick={loadMore}
             disabled={state.more === "loading"}
-            className="rounded-xl border px-6 py-2 font-semibold disabled:opacity-50"
+            className="btn px-8"
           >
             {state.more === "loading" ? "확인하는 중…" : state.more === "error" ? "다시 시도" : "더 보기"}
           </button>

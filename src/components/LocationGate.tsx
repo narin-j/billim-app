@@ -29,7 +29,7 @@ export function LocationGate({ params }: { params: Promise<{ isbn13: string }> }
   }, []);
 
   if (state.status === "loading") {
-    return <p className="p-6 text-center opacity-70">내 위치를 확인하고 있어요…</p>;
+    return <p className="p-6 text-center text-muted">내 위치를 확인하고 있어요…</p>;
   }
 
   if (state.status === "ok") {
@@ -42,14 +42,14 @@ export function LocationGate({ params }: { params: Promise<{ isbn13: string }> }
       <span aria-hidden className="text-3xl">
         📍
       </span>
-      <p className="font-semibold">{LOCATION_NEEDED}</p>
-      <p className="opacity-80">{LOCATION_FAILURE[state.status]}</p>
+      <p className="font-display text-lg">{LOCATION_NEEDED}</p>
+      <p className="text-muted">{LOCATION_FAILURE[state.status]}</p>
       {state.status === "unsupported" ? (
-        <Link href="/" className="rounded-xl border px-4 py-2">
+        <Link href="/" className="btn">
           뒤로 가기
         </Link>
       ) : (
-        <button type="button" onClick={retry} className="rounded-xl border px-4 py-2 font-semibold">
+        <button type="button" onClick={retry} className="btn btn-primary">
           다시 시도
         </button>
       )}

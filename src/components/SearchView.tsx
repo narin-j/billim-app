@@ -16,10 +16,10 @@ export function SearchView({ searchParams }: { searchParams: Promise<Record<stri
 
   return (
     <>
-      <header className="border-b px-4 py-3">
-        <form action="/search" method="get" className="grid gap-2">
+      <header className="px-3 pt-3 pb-1">
+        <form action="/search" method="get" className="grid gap-3">
           <div className="flex items-center gap-2">
-            <Link href="/" aria-label="뒤로" className="px-2 text-lg">
+            <Link href="/" aria-label="뒤로" className="icon-btn">
               ←
             </Link>
             <label htmlFor="q" className="sr-only">
@@ -34,14 +34,14 @@ export function SearchView({ searchParams }: { searchParams: Promise<Record<stri
               defaultValue={keyword}
               key={keyword}
               placeholder="검색어"
-              className="min-w-0 flex-1 rounded-xl border px-3 py-2"
+              className="field min-w-0 flex-1"
             />
-            <button type="submit" className="rounded-xl border px-3 py-2 font-semibold">
+            <button type="submit" className="btn btn-primary">
               검색
             </button>
           </div>
           {/* S2에서는 범위를 누르면 바로 다시 검색한다. requestSubmit이라 빈 검색어 검사도 거친다 */}
-          <div className="pl-9" onChange={(e) => (e.target as HTMLInputElement).form?.requestSubmit()}>
+          <div className="pl-[52px]" onChange={(e) => (e.target as HTMLInputElement).form?.requestSubmit()}>
             <SearchScopeOptions key={scope} value={scope} />
           </div>
         </form>
@@ -50,7 +50,7 @@ export function SearchView({ searchParams }: { searchParams: Promise<Record<stri
         {keyword ? (
           <SearchResults key={`${scope}:${keyword}`} keyword={keyword} scope={scope} />
         ) : (
-          <p className="p-6 text-center opacity-70">검색어를 입력해 주세요.</p>
+          <p className="p-6 text-center text-muted">검색어를 입력해 주세요.</p>
         )}
       </main>
     </>

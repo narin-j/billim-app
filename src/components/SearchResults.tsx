@@ -73,14 +73,14 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
   };
 
   if (state.status === "loading") {
-    return <p className="p-6 text-center opacity-70">책을 찾고 있어요…</p>;
+    return <p className="p-6 text-center text-muted">책을 찾고 있어요…</p>;
   }
 
   if (state.status === "error") {
     return (
       <section className="flex flex-col items-center gap-3 p-6 text-center">
         <p>{SEARCH_FAILED}</p>
-        <button type="button" onClick={retry} className="rounded-xl border px-4 py-2 font-semibold">
+        <button type="button" onClick={retry} className="btn btn-primary">
           다시 시도
         </button>
       </section>
@@ -88,37 +88,37 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
   }
 
   if (state.books.length === 0) {
-    return <p className="p-6 text-center opacity-70">{searchEmpty(keyword, scope)}</p>;
+    return <p className="p-6 text-center text-muted">{searchEmpty(keyword, scope)}</p>;
   }
 
   const hasMore = state.page * PAGE_SIZE < state.total;
 
   return (
     <>
-      <p className="px-4 pt-3 text-sm opacity-70">검색 결과 {state.total.toLocaleString("ko-KR")}권</p>
+      <p className="px-4 pt-3 text-sm text-muted">검색 결과 {state.total.toLocaleString("ko-KR")}권</p>
 
       {saveFailed && (
-        <p role="alert" className="mx-4 mt-3 rounded-lg border px-3 py-2 text-sm">
+        <p role="alert" className="notice mx-4 mt-3">
           {FAVORITES_SAVE_FAILED}
         </p>
       )}
 
-      <ul className="px-4">
+      <ul className="grid gap-3 px-4 py-3">
         {state.books.map((book) => {
           const favorite = isFavoriteBook(favorites, book.isbn13);
           return (
-            <li key={book.isbn13} className="flex items-start gap-3 border-b py-3">
-              <Link href={`/books/${book.isbn13}/libraries`} className="flex min-w-0 flex-1 items-start gap-3">
+            <li key={book.isbn13} className="card flex items-start gap-1 p-3">
+              <Link href={`/books/${book.isbn13}/libraries`} className="flex min-w-0 flex-1 items-start gap-3 rounded-2xl">
                 {book.coverUrl ? (
                   // 표지 주소는 외부 도메인이라 next/image 설정 없이 그대로 쓴다
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={book.coverUrl} alt="" loading="lazy" className="h-[70px] w-[52px] shrink-0 rounded object-cover" />
+                  <img src={book.coverUrl} alt="" loading="lazy" className="h-[70px] w-[52px] shrink-0 rounded-lg object-cover" />
                 ) : (
-                  <div aria-hidden className="h-[70px] w-[52px] shrink-0 rounded bg-foreground/10" />
+                  <div aria-hidden className="h-[70px] w-[52px] shrink-0 rounded-lg bg-line" />
                 )}
                 <span className="grid min-w-0 gap-1">
                   <span className="font-semibold">{book.title}</span>
-                  <span className="text-sm opacity-70">
+                  <span className="text-sm text-muted">
                     {[book.author, book.publisher, book.year].filter(Boolean).join(" · ")}
                   </span>
                 </span>
@@ -128,7 +128,7 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
                 onClick={() => toggleFavorite(book)}
                 aria-pressed={favorite}
                 aria-label={favorite ? `${book.title} 즐겨찾기에서 빼기` : `${book.title} 즐겨찾기에 넣기`}
-                className="px-2 text-xl"
+                className="icon-btn star"
               >
                 {favorite ? "★" : "☆"}
               </button>
@@ -138,13 +138,13 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
       </ul>
 
       {hasMore && (
-        <div className="flex flex-col items-center gap-2 p-4">
+        <div className="flex flex-col items-center gap-2 px-4 pt-1 pb-6">
           {state.more === "error" && <p className="text-sm">{SEARCH_FAILED}</p>}
           <button
             type="button"
             onClick={loadMore}
             disabled={state.more === "loading"}
-            className="rounded-xl border px-6 py-2 font-semibold disabled:opacity-50"
+            className="btn px-8"
           >
             {state.more === "loading" ? "불러오는 중…" : state.more === "error" ? "다시 시도" : "더 보기"}
           </button>

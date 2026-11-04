@@ -10,11 +10,11 @@ import type { FindBookResponse } from "@/server/findBook";
 /** S4 머리 틀. 책을 모를 때는 "주변 도서관"만 보인다 */
 export function HeaderBar({ title = "주변 도서관", children }: { title?: string; children?: ReactNode }) {
   return (
-    <header className="flex items-center gap-2 border-b px-4 py-3">
-      <Link href="/" aria-label="뒤로" className="px-2 text-lg">
+    <header className="flex items-center gap-1 px-3 pt-3 pb-1">
+      <Link href="/" aria-label="뒤로" className="icon-btn">
         ←
       </Link>
-      <h1 className="min-w-0 flex-1 truncate font-semibold">{title}</h1>
+      <h1 className="min-w-0 flex-1 truncate font-display text-xl">{title}</h1>
       {children}
     </header>
   );
@@ -61,14 +61,14 @@ export function BookHeader({ params }: { params: Promise<{ isbn13: string }> }) 
             onClick={() => setSaveFailed(!(saved ? removeBook(isbn13) : addBook(book)))}
             aria-pressed={Boolean(saved)}
             aria-label={saved ? `${book.title} 즐겨찾기에서 빼기` : `${book.title} 즐겨찾기에 넣기`}
-            className="px-2 text-xl"
+            className="icon-btn star"
           >
             {saved ? "★" : "☆"}
           </button>
         )}
       </HeaderBar>
       {saveFailed && (
-        <p role="alert" className="mx-4 mt-3 rounded-lg border px-3 py-2 text-sm">
+        <p role="alert" className="notice mx-4 mt-3">
           {FAVORITES_SAVE_FAILED}
         </p>
       )}

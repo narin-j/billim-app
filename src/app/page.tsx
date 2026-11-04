@@ -7,11 +7,11 @@ export default function Home() {
   return (
     <>
       <header className="flex items-center justify-between px-4 py-3">
-        <span className="text-lg font-bold">billim</span>
+        <span className="font-display text-2xl">billim</span>
         <FavoritesCount />
       </header>
-      <main className="flex flex-1 flex-col justify-center gap-4 px-5 pb-24">
-        <h1 className="text-2xl font-semibold">어떤 책을 빌리고 싶나요?</h1>
+      <main className="flex flex-1 flex-col justify-center gap-5 px-5 pb-24">
+        <h1 className="font-display text-3xl text-balance">어떤 책을 빌리고 싶나요?</h1>
         {/* 빈 키워드는 pattern으로 막는다 */}
         <form action="/search" method="get" className="grid gap-3">
           <SearchScopeOptions value={DEFAULT_SEARCH_SCOPE} />
@@ -26,14 +26,14 @@ export default function Home() {
               required
               pattern=".*\S.*"
               placeholder="검색어"
-              className="min-w-0 flex-1 rounded-xl border px-4 py-3"
+              className="field min-w-0 flex-1"
             />
-            <button type="submit" className="rounded-xl border px-4 py-3 font-semibold">
+            <button type="submit" className="btn btn-primary">
               검색
             </button>
           </div>
         </form>
-        <p className="text-sm opacity-70">도서관 정보나루 데이터 기준</p>
+        <p className="text-sm text-muted">도서관 정보나루 데이터 기준</p>
       </main>
     </>
   );

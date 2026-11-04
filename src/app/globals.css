@@ -130,7 +130,8 @@ body {
     border-radius: 999px;
     padding: 0.4rem 1.1rem;
   }
-  .chip:has(:checked) {
+  .chip:has(:checked),
+  .chip[aria-selected="true"] {
     --face: var(--mint);
     --edge: var(--mint-edge);
     --ink: var(--on-mint);
@@ -155,6 +156,7 @@ body {
   }
   .btn:focus-visible,
   .pill:focus-visible,
+  .chip:focus-visible,
   .chip:has(:focus-visible) {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
