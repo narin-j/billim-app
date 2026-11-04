@@ -268,11 +268,68 @@ body {
   }
 }
 
+/* S4-1 도서관 상세 시트 (<dialog>). 아래에서 통 튀며 올라오고, 닫을 때 내려간다 */
+.sheet {
+  margin: auto auto 0;
+  width: 100%;
+  max-width: 28rem;
+  max-height: 90dvh;
+  overflow-y: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 28px 28px 0 0;
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: 0 -10px 24px -12px rgb(60 40 20 / 0.45);
+}
+.sheet[open] {
+  animation: sheet-in 0.45s cubic-bezier(0.34, 1.3, 0.5, 1);
+}
+/* ::backdrop은 변수를 물려받지 못하는 브라우저가 있어 색을 직접 쓴다 */
+.sheet::backdrop {
+  background: rgb(40 28 18 / 0.45);
+  animation: fade-in 0.25s ease;
+}
+.sheet.closing {
+  animation: sheet-out 0.22s ease-in forwards;
+}
+.sheet.closing::backdrop {
+  animation: fade-out 0.22s ease-in forwards;
+}
+/* 시트가 열린 동안 뒤 화면이 스크롤되지 않게 한다 */
+html:has(.sheet[open]) {
+  overflow: hidden;
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btn,
   .chip,
   .pill,
   .card-tap {
     transition: none;
+  }
+  .sheet,
+  .sheet::backdrop {
+    animation: none !important;
   }
 }
