@@ -6,14 +6,22 @@ import type { FavoriteBook } from "@/lib/types";
 import { useFavorites } from "@/lib/useFavorites";
 import type { FindBookResponse } from "@/server/findBook";
 import { BackButton } from "./BackButton";
+import { TitleSkeleton } from "./Skeleton";
 import { StarIcon } from "./StarIcon";
 
-/** S4 머리 틀. 책을 모를 때는 "주변 도서관"만 보인다 */
-export function HeaderBar({ title = "주변 도서관", children }: { title?: string; children?: ReactNode }) {
+type HeaderBarProps = {
+  title?: string;
+  /** 책 정보를 불러오는 중이면 제목 자리에 회색 틀을 둔다 */
+  loading?: boolean;
+  children?: ReactNode;
+};
+
+/** S4 머리 틀. 책을 불러오는 중에는 회색 틀, 모르면 "주변 도서관"이 보인다 */
+export function HeaderBar({ title = "주변 도서관", loading = false, children }: HeaderBarProps) {
   return (
-    <header className="flex items-center gap-1 px-3 pt-3 pb-1">
+    <header className="flex min-h-[60px] items-center gap-1 px-3 pt-3 pb-1">
       <BackButton />
-      <h1 className="min-w-0 flex-1 truncate font-display text-xl">{title}</h1>
+      <h1 className="min-w-0 flex-1 truncate font-display text-xl">{loading ? <TitleSkeleton /> : title}</h1>
       {children}
     </header>
   );
@@ -32,7 +40,8 @@ async function fetchBook(isbn13: string): Promise<FavoriteBook | null> {
 export function BookHeader({ params }: { params: Promise<{ isbn13: string }> }) {
   const { isbn13 } = use(params);
   const { favorites, addBook, removeBook } = useFavorites();
-  const [fetched, setFetched] = useState<FavoriteBook | null>(null);
+  // undefined = 불러오는 중, null = 못 찾음
+  const [fetched, setFetched] = useState<FavoriteBook | null | undefined>(undefined);
   const [saveFailed, setSaveFailed] = useState(false);
 
   useEffect(() => {
@@ -41,7 +50,9 @@ export function BookHeader({ params }: { params: Promise<{ isbn13: string }> }) 
       (book) => {
         if (!cancelled) setFetched(book);
       },
-      () => {},
+      () => {
+        if (!cancelled) setFetched(null);
+      },
     );
     return () => {
       cancelled = true;
@@ -49,11 +60,11 @@ export function BookHeader({ params }: { params: Promise<{ isbn13: string }> }) 
   }, [isbn13]);
 
   const saved = favorites.books.find((b) => b.isbn13 === isbn13);
-  const book = saved ?? fetched;
+  const book = saved ?? fetched ?? null;
 
   return (
     <>
-      <HeaderBar title={book?.title}>
+      <HeaderBar title={book?.title} loading={!book && fetched === undefined}>
         {book && (
           <button
             type="button"

@@ -5,6 +5,7 @@ import { requestLocation, type LocationResult } from "@/lib/location";
 import { LOCATION_FAILURE, LOCATION_NEEDED } from "@/lib/messages";
 import { BackButton } from "./BackButton";
 import { NearbyLibraries } from "./NearbyLibraries";
+import { LibraryListSkeleton } from "./Skeleton";
 
 type State = { status: "loading" } | LocationResult;
 
@@ -29,7 +30,7 @@ export function LocationGate({ params }: { params: Promise<{ isbn13: string }> }
   }, []);
 
   if (state.status === "loading") {
-    return <p className="p-6 text-center text-muted">내 위치를 확인하고 있어요…</p>;
+    return <LibraryListSkeleton label="내 위치를 확인하고 있어요…" />;
   }
 
   if (state.status === "ok") {
