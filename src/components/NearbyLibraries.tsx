@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { availableFirst } from "@/lib/availableFirst";
 import { AVAILABILITY_LABEL, NEARBY_EMPTY, NEARBY_FAILED } from "@/lib/messages";
 import type { Availability, LatLng, NearbyLibrary } from "@/lib/types";
 import type { NearbyResponse } from "@/server/findNearbyLibraries";
@@ -107,10 +108,9 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
       </div>
 
       <ol className="px-4">
-        {state.libraries.map((library) => (
+        {availableFirst(state.libraries).map((library) => (
           <li key={library.libCode} className="grid gap-1 border-b py-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm opacity-70">({library.rank})</span>
               <span className="min-w-0 flex-1 font-semibold">{library.name}</span>
               <span className="shrink-0 text-sm">{formatDistance(library.distanceKm)}</span>
             </div>
