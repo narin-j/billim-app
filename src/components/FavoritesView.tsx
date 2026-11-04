@@ -115,6 +115,7 @@ export function FavoritesView() {
         <LibrarySheet
           library={opened}
           isFavorite={isFavoriteLibrary(favorites, opened.libCode)}
+          saveFailed={saveFailed}
           onToggleFavorite={() =>
             save(
               isFavoriteLibrary(favorites, opened.libCode)

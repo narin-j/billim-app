@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import type { FavoriteLibrary } from "@/lib/types";
+import { FAVORITES_SAVE_FAILED, formatDistance } from "@/lib/messages";
+import type { Availability, FavoriteLibrary } from "@/lib/types";
+import { AvailabilityStatus } from "./AvailabilityStatus";
 
 type Props = {
   library: FavoriteLibrary;
+  /** S4에서 열 때만 있다. 즐겨찾기(S5)에서는 고른 책이 없어 대출 여부를 모른다 */
+  status?: { distanceKm: number | null; availability: Availability };
   isFavorite: boolean;
+  saveFailed?: boolean;
   onToggleFavorite: () => void;
   onClose: () => void;
 };
 
-/** S4-1. 도서관 상세 (아래에서 올라오는 시트). 즐겨찾기에서 열 때는 대출 여부 없이 보여 준다 */
-export function LibrarySheet({ library, isFavorite, onToggleFavorite, onClose }: Props) {
+/** S4-1. 도서관 상세 (아래에서 올라오는 시트) */
+export function LibrarySheet({ library, status, isFavorite, saveFailed = false, onToggleFavorite, onClose }: Props) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -28,9 +33,10 @@ export function LibrarySheet({ library, isFavorite, onToggleFavorite, onClose }:
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2">
-          <h2 id="library-sheet-title" className="flex-1 text-lg font-semibold">
+          <h2 id="library-sheet-title" className="min-w-0 flex-1 text-lg font-semibold">
             {library.name}
           </h2>
+          {status && <span className="shrink-0 text-sm">{formatDistance(status.distanceKm)}</span>}
           <button
             type="button"
             onClick={onToggleFavorite}
@@ -44,7 +50,16 @@ export function LibrarySheet({ library, isFavorite, onToggleFavorite, onClose }:
             ×
           </button>
         </div>
-        <p className="text-sm opacity-70">대출 가능 여부는 책을 고른 뒤 주변 도서관 목록에서 확인해요.</p>
+        {status ? (
+          <AvailabilityStatus availability={status.availability} />
+        ) : (
+          <p className="text-sm opacity-70">대출 가능 여부는 책을 고른 뒤 주변 도서관 목록에서 확인해요.</p>
+        )}
+        {saveFailed && (
+          <p role="alert" className="rounded-lg border px-3 py-2 text-sm">
+            {FAVORITES_SAVE_FAILED}
+          </p>
+        )}
         <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
           <dt className="opacity-70">주소</dt>
           <dd>{library.address ?? "정보 없음"}</dd>

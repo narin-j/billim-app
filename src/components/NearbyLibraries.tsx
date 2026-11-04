@@ -2,9 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { availableFirst } from "@/lib/availableFirst";
-import { AVAILABILITY_LABEL, NEARBY_EMPTY, NEARBY_FAILED } from "@/lib/messages";
-import type { Availability, LatLng, NearbyLibrary } from "@/lib/types";
+import { isFavoriteLibrary } from "@/lib/favorites";
+import { formatDistance, NEARBY_EMPTY, NEARBY_FAILED } from "@/lib/messages";
+import type { FavoriteLibrary, LatLng, NearbyLibrary } from "@/lib/types";
+import { useFavorites } from "@/lib/useFavorites";
 import type { NearbyResponse } from "@/server/findNearbyLibraries";
+import { AvailabilityStatus } from "./AvailabilityStatus";
+import { LibrarySheet } from "./LibrarySheet";
 
 type Loaded = Extract<NearbyResponse, { libraries: unknown }>;
 
@@ -12,12 +16,6 @@ type State =
   | { status: "loading" }
   | { status: "error" }
   | { status: "ok"; total: number; libraries: NearbyLibrary[]; page: number; hasMore: boolean; checkedAt: string; more: "idle" | "loading" | "error" };
-
-const DOT: Record<Availability, string> = {
-  available: "bg-green-600",
-  onLoan: "bg-gray-400",
-  unknown: "bg-yellow-400",
-};
 
 /** 우리 서버(/api/libraries)를 부른다. 좌표는 주소에 남지 않도록 본문에 담는다 */
 async function fetchPage(isbn13: string, me: LatLng, page: number): Promise<Loaded> {
@@ -31,7 +29,14 @@ async function fetchPage(isbn13: string, me: LatLng, page: number): Promise<Load
   return body;
 }
 
-const formatDistance = (km: number | null) => (km === null ? "거리 알 수 없음" : `${km.toFixed(1)}km`);
+/** 즐겨찾기에는 도서관 정보만 저장한다. 거리와 대출 여부는 그때그때 바뀐다 */
+const toFavorite = ({ libCode, name, address, tel, homepage }: NearbyLibrary): FavoriteLibrary => ({
+  libCode,
+  name,
+  address,
+  tel,
+  homepage,
+});
 
 const formatTime = (iso: string) =>
   new Date(iso).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
@@ -39,6 +44,15 @@ const formatTime = (iso: string) =>
 /** S4. 소장 도서관 거리순 목록. 5곳씩 보여 주고 더 보기로 다음 5곳을 확인한다 */
 export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) {
   const [state, setState] = useState<State>({ status: "loading" });
+  const { favorites, addLibrary, removeLibrary } = useFavorites();
+  const [openedCode, setOpenedCode] = useState<string | null>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
+
+  const openSheet = (libCode: string) => {
+    setSaveFailed(false);
+    setOpenedCode(libCode);
+  };
+  const closeSheet = useCallback(() => setOpenedCode(null), []);
 
   const loadFirst = useCallback(() => {
     let cancelled = false;
@@ -97,6 +111,8 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
   }
 
   const available = state.libraries.filter((l) => l.availability === "available").length;
+  const opened = state.libraries.find((l) => l.libCode === openedCode);
+  const openedIsFavorite = opened ? isFavoriteLibrary(favorites, opened.libCode) : false;
 
   return (
     <>
@@ -109,15 +125,19 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
 
       <ol className="px-4">
         {availableFirst(state.libraries).map((library) => (
-          <li key={library.libCode} className="grid gap-1 border-b py-3">
-            <div className="flex items-baseline gap-2">
-              <span className="min-w-0 flex-1 font-semibold">{library.name}</span>
-              <span className="shrink-0 text-sm">{formatDistance(library.distanceKm)}</span>
-            </div>
-            <span className="flex items-center gap-2 text-sm">
-              <span aria-hidden className={`inline-block h-2.5 w-2.5 rounded-full ${DOT[library.availability]}`} />
-              {AVAILABILITY_LABEL[library.availability]}
-            </span>
+          <li key={library.libCode} className="border-b">
+            <button
+              type="button"
+              onClick={() => openSheet(library.libCode)}
+              aria-haspopup="dialog"
+              className="grid w-full gap-1 py-3 text-left"
+            >
+              <span className="flex items-baseline gap-2">
+                <span className="min-w-0 flex-1 font-semibold">{library.name}</span>
+                <span className="shrink-0 text-sm">{formatDistance(library.distanceKm)}</span>
+              </span>
+              <AvailabilityStatus availability={library.availability} />
+            </button>
           </li>
         ))}
       </ol>
@@ -134,6 +154,19 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
             {state.more === "loading" ? "확인하는 중…" : state.more === "error" ? "다시 시도" : "더 보기"}
           </button>
         </div>
+      )}
+
+      {opened && (
+        <LibrarySheet
+          library={toFavorite(opened)}
+          status={{ distanceKm: opened.distanceKm, availability: opened.availability }}
+          isFavorite={openedIsFavorite}
+          saveFailed={saveFailed}
+          onToggleFavorite={() =>
+            setSaveFailed(!(openedIsFavorite ? removeLibrary(opened.libCode) : addLibrary(toFavorite(opened))))
+          }
+          onClose={closeSheet}
+        />
       )}
     </>
   );

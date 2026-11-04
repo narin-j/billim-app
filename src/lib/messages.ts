@@ -24,6 +24,7 @@ export const SEARCH_FAILED = "책 정보를 불러오지 못했어요. 잠시 �
 
 export const NEARBY_EMPTY = "주변 도서관에는 이 책이 없어요.";
 export const NEARBY_FAILED = "도서관 정보를 불러오지 못했어요.";
+export const formatDistance = (km: number | null) => (km === null ? "거리 알 수 없음" : `${km.toFixed(1)}km`);
 export const AVAILABILITY_LABEL: Record<Availability, string> = {
   available: "대출 가능",
   onLoan: "대출 중",
