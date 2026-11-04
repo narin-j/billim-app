@@ -30,7 +30,11 @@ export function LibrarySheet({ library, status, isFavorite, saveFailed = false, 
 
   useEffect(() => {
     const dialog = ref.current;
-    if (dialog && !dialog.open) dialog.showModal();
+    if (dialog && !dialog.open) {
+      // showModal이 없는 오래된 브라우저에서는 열어 두기만 한다 (위치는 CSS가 고정)
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+    }
     return () => {
       if (dialog?.open) dialog.close();
     };
