@@ -1,11 +1,12 @@
 import "server-only";
 
 import { cacheLife } from "next/cache";
-import type { LibraryInfo } from "@/lib/types";
+import type { BookSummary, LibraryInfo } from "@/lib/types";
 import type { Fetched } from "../findNearbyLibraries";
 import type { DirectoryEntry } from "../pickRegions";
 import { data4library, type Endpoint, type FailureReason } from "./index";
 import entries from "./libraryDirectory.json";
+import { toBooks } from "./toBooks";
 import { toLibraries } from "./toLibraries";
 
 const PAGE_SIZE = 500;
@@ -35,6 +36,17 @@ async function regionHolders(isbn13: string, region: string): Promise<LibraryInf
   return fetchAllLibraries("libSrchByBook", { isbn: isbn13, region });
 }
 
+/** ISBN으로 책 한 권 조회 (srchBooks). 하루 캐시. 없는 ISBN(빈 목록)도 캐시한다 */
+async function booksByIsbn(isbn13: string): Promise<BookSummary[]> {
+  "use cache: remote";
+  cacheLife("days");
+  const result = await data4library("srchBooks", { isbn13 });
+  if (!result.ok) throw new Error(FAILURE_PREFIX + result.reason);
+  const converted = toBooks(result.body);
+  if (!converted.ok) throw new Error(FAILURE_PREFIX + converted.reason);
+  return converted.page.books;
+}
+
 async function settle<T>(run: () => Promise<T>): Promise<Fetched<T>> {
   try {
     return { ok: true, value: await run() };
@@ -49,3 +61,5 @@ async function settle<T>(run: () => Promise<T>): Promise<Fetched<T>> {
 export const directory = async (): Promise<Fetched<DirectoryEntry[]>> => ({ ok: true, value: entries });
 
 export const holders = (isbn13: string, region: string) => settle(() => regionHolders(isbn13, region));
+
+export const bookByIsbn = (isbn13: string) => settle(() => booksByIsbn(isbn13));
