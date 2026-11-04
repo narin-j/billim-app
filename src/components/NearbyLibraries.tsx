@@ -116,31 +116,38 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
 
   return (
     <>
-      <div className="card mx-4 mt-3 grid gap-0.5 px-5 py-4">
-        <p className="font-display">
-          소장 {state.total.toLocaleString("ko-KR")}곳 · 확인한 {state.libraries.length}곳 중 대출 가능 {available}곳
-        </p>
-        <p className="text-sm text-muted">확인 시각 {formatTime(state.checkedAt)}</p>
-      </div>
+      {/* 요약과 목록을 바느질 판 하나에 담고, 도서관 사이는 얇은 선으로만 나눈다 */}
+      <section className="card mx-4 my-3 overflow-hidden p-2.5">
+        <div className="grid gap-0.5 px-3 pt-2 pb-3">
+          <p className="font-semibold">
+            소장 {state.total.toLocaleString("ko-KR")}곳 · 확인한 {state.libraries.length}곳 중{" "}
+            <span className="text-ok">대출 가능 {available}곳</span>
+          </p>
+          <p className="text-sm text-muted">확인 시각 {formatTime(state.checkedAt)}</p>
+        </div>
 
-      <ol className="grid gap-3 px-4 py-3">
-        {availableFirst(state.libraries).map((library) => (
-          <li key={library.libCode}>
-            <button
-              type="button"
-              onClick={() => openSheet(library.libCode)}
-              aria-haspopup="dialog"
-              className="card card-tap grid w-full gap-1.5 px-5 py-4 text-left"
-            >
-              <span className="flex items-baseline gap-2">
-                <span className="min-w-0 flex-1 font-semibold">{library.name}</span>
-                <span className="shrink-0 text-sm text-muted tabular-nums">{formatDistance(library.distanceKm)}</span>
-              </span>
-              <AvailabilityStatus availability={library.availability} />
-            </button>
-          </li>
-        ))}
-      </ol>
+        <ol className="border-t-2 border-dashed border-line">
+          {availableFirst(state.libraries).map((library) => (
+            <li key={library.libCode} className="border-b border-line/60 last:border-b-0">
+              <button
+                type="button"
+                onClick={() => openSheet(library.libCode)}
+                aria-haspopup="dialog"
+                className="row-tap flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left"
+              >
+                <span className="grid min-w-0 flex-1 gap-1">
+                  <span className="text-[1.0625rem] font-semibold">{library.name}</span>
+                  <AvailabilityStatus availability={library.availability} />
+                </span>
+                <span className="shrink-0 font-semibold tabular-nums">{formatDistance(library.distanceKm)}</span>
+                <span aria-hidden className="text-lg text-muted">
+                  ›
+                </span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </section>
 
       {state.hasMore && (
         <div className="flex flex-col items-center gap-2 px-4 pt-1 pb-6">

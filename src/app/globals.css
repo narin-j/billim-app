@@ -82,6 +82,7 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-ok: var(--ok);
   --font-sans: var(--font-gowun), system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --font-display: var(--font-jua), var(--font-gowun), system-ui, sans-serif;
 }
@@ -211,6 +212,19 @@ body {
   .card-tap:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 2px;
+  }
+
+  /* 판 안의 한 줄. 누르면 살짝 어두워진다 */
+  .row-tap {
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .row-tap:active {
+    background-color: color-mix(in srgb, var(--line) 40%, transparent);
+  }
+  .row-tap:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: -3px;
   }
 
   .badge {
