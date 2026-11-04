@@ -11,7 +11,7 @@ export default function LibrariesPage({ params }: PageProps<"/books/[isbn13]/lib
         <BookHeader params={params} />
       </Suspense>
       <main className="flex flex-1 flex-col">
-        <Suspense fallback={<p className="p-6 text-center opacity-70">불러오는 중…</p>}>
+        <Suspense fallback={<p className="p-6 text-center text-muted">불러오는 중…</p>}>
           <LocationGate params={params} />
         </Suspense>
       </main>

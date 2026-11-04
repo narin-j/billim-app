@@ -8,7 +8,7 @@ export function SearchScopeOptions({ value }: { value: SearchScope }) {
       {SEARCH_SCOPES.map((scope) => (
         <label
           key={scope}
-          className="rounded-full border px-3 py-1 text-sm has-[:checked]:bg-foreground has-[:checked]:text-background has-[:focus-visible]:outline-2"
+          className="chip text-sm"
         >
           <input type="radio" name="by" value={scope} defaultChecked={scope === value} className="sr-only" />
           {SEARCH_SCOPE_LABEL[scope]}

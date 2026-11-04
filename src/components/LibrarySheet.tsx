@@ -24,46 +24,48 @@ export function LibrarySheet({ library, status, isFavorite, saveFailed = false, 
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 flex items-end justify-center bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 flex items-end justify-center bg-[rgb(40_28_18/0.45)]" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="library-sheet-title"
-        className="grid w-full max-w-md gap-3 rounded-t-2xl bg-background p-5"
+        className="grid w-full max-w-md gap-3 rounded-t-[28px] bg-surface px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-10px_24px_-12px_rgb(60_40_20/0.45)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2">
-          <h2 id="library-sheet-title" className="min-w-0 flex-1 text-lg font-semibold">
+        <span aria-hidden className="h-1.5 w-10 justify-self-center rounded-full bg-line" />
+        <div className="flex items-center gap-1">
+          <h2 id="library-sheet-title" className="min-w-0 flex-1 font-display text-xl">
             {library.name}
           </h2>
-          {status && <span className="shrink-0 text-sm">{formatDistance(status.distanceKm)}</span>}
+          {status && <span className="shrink-0 text-sm text-muted tabular-nums">{formatDistance(status.distanceKm)}</span>}
           <button
             type="button"
             onClick={onToggleFavorite}
             aria-pressed={isFavorite}
             aria-label={isFavorite ? "즐겨찾기에서 빼기" : "즐겨찾기에 넣기"}
-            className="px-2 text-xl"
+            className="icon-btn star"
           >
             {isFavorite ? "★" : "☆"}
           </button>
-          <button type="button" onClick={onClose} aria-label="닫기" className="px-2 text-xl">
+          <button type="button" onClick={onClose} aria-label="닫기" className="icon-btn">
             ×
           </button>
         </div>
         {status ? (
           <AvailabilityStatus availability={status.availability} />
         ) : (
-          <p className="text-sm opacity-70">대출 가능 여부는 책을 고른 뒤 주변 도서관 목록에서 확인해요.</p>
+          <p className="text-sm text-muted">대출 가능 여부는 책을 고른 뒤 주변 도서관 목록에서 확인해요.</p>
         )}
         {saveFailed && (
-          <p role="alert" className="rounded-lg border px-3 py-2 text-sm">
+          <p role="alert" className="notice">
             {FAVORITES_SAVE_FAILED}
           </p>
         )}
+        <hr className="border-0 border-t-2 border-dashed border-line" />
         <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-          <dt className="opacity-70">주소</dt>
+          <dt className="text-muted">주소</dt>
           <dd>{library.address ?? "정보 없음"}</dd>
-          <dt className="opacity-70">전화</dt>
+          <dt className="text-muted">전화</dt>
           <dd>
             {library.tel ? (
               <a href={`tel:${library.tel}`} className="underline">
@@ -79,7 +81,7 @@ export function LibrarySheet({ library, status, isFavorite, saveFailed = false, 
             href={library.homepage}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-xl border px-4 py-3 text-center font-semibold"
+            className="btn btn-primary"
           >
             도서관 홈페이지 열기 ↗
           </a>
