@@ -1,20 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { use, useEffect, useState, type ReactNode } from "react";
 import { FAVORITES_SAVE_FAILED } from "@/lib/messages";
 import type { FavoriteBook } from "@/lib/types";
 import { useFavorites } from "@/lib/useFavorites";
 import type { FindBookResponse } from "@/server/findBook";
+import { BackButton } from "./BackButton";
 import { StarIcon } from "./StarIcon";
 
 /** S4 머리 틀. 책을 모를 때는 "주변 도서관"만 보인다 */
 export function HeaderBar({ title = "주변 도서관", children }: { title?: string; children?: ReactNode }) {
   return (
     <header className="flex items-center gap-1 px-3 pt-3 pb-1">
-      <Link href="/" aria-label="뒤로" className="icon-btn">
-        ←
-      </Link>
+      <BackButton />
       <h1 className="min-w-0 flex-1 truncate font-display text-xl">{title}</h1>
       {children}
     </header>

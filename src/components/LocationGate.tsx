@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { use, useCallback, useEffect, useState } from "react";
 import { requestLocation, type LocationResult } from "@/lib/location";
 import { LOCATION_FAILURE, LOCATION_NEEDED } from "@/lib/messages";
+import { BackButton } from "./BackButton";
 import { NearbyLibraries } from "./NearbyLibraries";
 
 type State = { status: "loading" } | LocationResult;
@@ -45,9 +45,7 @@ export function LocationGate({ params }: { params: Promise<{ isbn13: string }> }
       <p className="font-display text-lg">{LOCATION_NEEDED}</p>
       <p className="text-muted">{LOCATION_FAILURE[state.status]}</p>
       {state.status === "unsupported" ? (
-        <Link href="/" className="btn">
-          뒤로 가기
-        </Link>
+        <BackButton className="btn">뒤로 가기</BackButton>
       ) : (
         <button type="button" onClick={retry} className="btn btn-primary">
           다시 시도
