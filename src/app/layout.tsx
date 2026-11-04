@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { Gowun_Dodum, Jua } from "next/font/google";
 import "./globals.css";
+
+// 한글 글꼴은 subsets에 한글이 없어 미리 받지 않고, 쓰는 글자 범위만 받는다
+const gowun = Gowun_Dodum({ weight: "400", variable: "--font-gowun", preload: false, display: "swap" });
+const jua = Jua({ weight: "400", variable: "--font-jua", preload: false, display: "swap" });
 
 export const metadata: Metadata = {
   title: "billim",
@@ -9,11 +14,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#efe5d6" },
+    { media: "(prefers-color-scheme: dark)", color: "#2a221b" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className="h-full antialiased">
+    <html lang="ko" className={`${gowun.variable} ${jua.variable} h-full font-sans antialiased`}>
       <body className="mx-auto flex min-h-full w-full max-w-md flex-col">{children}</body>
     </html>
   );
