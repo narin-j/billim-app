@@ -39,7 +39,8 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
     const cached = loadSearch(getSessionStorage(), scope, keyword, Date.now());
     if (cached) {
       restoreScroll.current = cached.scrollY;
-      Promise.resolve().then(() => {
+      // 효과 안에서 바로 상태를 바꾸지 않도록 한 박자 늦춘다. 실패할 일이 없어 결과는 기다리지 않는다
+      void Promise.resolve().then(() => {
         if (!cancelled) setState({ status: "ok", total: cached.total, books: cached.books, page: cached.page, more: "idle" });
       });
       return () => {
