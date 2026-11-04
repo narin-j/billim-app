@@ -5,13 +5,8 @@ import type { LibraryInfo } from "@/lib/types";
 import type { Fetched } from "../findNearbyLibraries";
 import type { DirectoryEntry } from "../pickRegions";
 import { data4library, type Endpoint, type FailureReason } from "./index";
+import entries from "./libraryDirectory.json";
 import { toLibraries } from "./toLibraries";
-
-/** 정보나루 시도 코드 (docs/spec.md 8장) */
-export const REGION_CODES = [
-  "11", "21", "22", "23", "24", "25", "26", "29",
-  "31", "32", "33", "34", "35", "36", "37", "38", "39",
-] as const;
 
 const PAGE_SIZE = 500;
 /** 쪽 넘김이 끝나지 않을 때 호출 한도를 지키는 상한 */
@@ -33,14 +28,6 @@ async function fetchAllLibraries(endpoint: Endpoint, params: Record<string, stri
   return libraries;
 }
 
-/** 한 시도의 도서관 좌표 (libSrch). 하루 캐시, 모든 인스턴스가 공유 */
-async function regionDirectory(region: string): Promise<DirectoryEntry[]> {
-  "use cache: remote";
-  cacheLife("days");
-  const libraries = await fetchAllLibraries("libSrch", { region });
-  return libraries.map(({ location }) => ({ region, location }));
-}
-
 /** 한 시도에서 이 책을 가진 도서관 (libSrchByBook). 하루 캐시, 모든 인스턴스가 공유 */
 async function regionHolders(isbn13: string, region: string): Promise<LibraryInfo[]> {
   "use cache: remote";
@@ -58,7 +45,7 @@ async function settle<T>(run: () => Promise<T>): Promise<Fetched<T>> {
   }
 }
 
-export const directory = () =>
-  settle(async () => (await Promise.all(REGION_CODES.map(regionDirectory))).flat());
+/** 전국 도서관 좌표. 런타임에 libSrch를 부르지 않고 파일을 읽는다 (갱신: npm run update:libraries) */
+export const directory = async (): Promise<Fetched<DirectoryEntry[]>> => ({ ok: true, value: entries });
 
 export const holders = (isbn13: string, region: string) => settle(() => regionHolders(isbn13, region));

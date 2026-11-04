@@ -210,7 +210,7 @@ flowchart TD
 |---|---|---|
 | 정보나루 인증키 발급 | 활성화됨 (2026-10-29) | 2026-10-27에는 `{"response":{"errCode":"vitalizationErr","error":"API 활성화 상태가아닙니다."}}`. **오류도 HTTP 200으로 온다** → 상태 코드가 아니라 `response.error`로 실패를 판단해야 한다. 2026-10-29 정상 응답 확인 |
 | 일일 호출 한도 | 하루 499건 | 사용자가 정보나루 마이페이지에서 확인 (2026-10-29). 응답에는 한도 정보가 없다. 한도를 넘었을 때의 응답은 미확인 |
-| `libSrch` 응답 | 확인 | `libSrchByBook`과 같은 `libs[].lib` 형태에 `BookCount`가 더 있다. `pageSize=500`이면 한 번에 다 온다(경기 400곳). 2026-10-29 기준 17개 시도 합계 약 1,620곳, 받아 본 곳 중 좌표 없는 곳은 없었다 |
+| `libSrch` 응답 | 확인 | `libSrchByBook`과 같은 `libs[].lib` 형태에 `BookCount`가 더 있다. `pageSize=500`이면 한 번에 다 온다(경기 400곳). 2026-10-29 기준 17개 시도 합계 약 1,620곳, 받아 본 곳 중 좌표 없는 곳은 없었다. 런타임에는 부르지 않고 갱신 스크립트에서만 쓴다(9장 2026-11-03) |
 | `bookExist` 오류 | 확인 | 없는 도서관 코드면 `{"errCode":"libCodeErr","error":"도서관 코드를 확인하시기 바랍니다."}` |
 | `bookExist`가 대출 가능 여부도 주는지, 실시간인지 전날 기준인지 | 대출 가능 여부: 있음 / 기준 시각: 미확인 | `{"response":{"request":{...},"result":{"hasBook":"Y","loanAvailable":"Y"}}}`. 값은 `"Y"`/`"N"` 문자열. 응답에 기준 시각이 없다 → F3 직접 확인(도서관 홈페이지와 비교)으로 판단한다 |
 | `libSrchByBook` 응답에 도서관 좌표(위도/경도)가 있는지 | 있음 | `response.libs[].lib` 안에 `libCode`, `libName`, `address`, `tel`, `fax`, `latitude`, `longitude`, `homepage`, `closed`, `operatingTime`. 좌표는 **문자열**(`"37.492994"`). `numFound`(전체 수), `resultNum`(이번 쪽 수). 소장 도서관이 없으면 `numFound: 0, libs: []`. `region`이 **필수**: 빼면 `{"errCode":"regionCodeErr","error":"지역코드를 확인해 주시기 바랍니다."}` |
@@ -247,9 +247,10 @@ flowchart TD
 | 2026-10-29 | S4 요약은 "소장 N곳 · 확인한 M곳 중 대출 가능 K곳", 기준 시각 대신 우리가 조회한 "확인 시각"을 보여 준다 | 사용자 결정. `bookExist` 응답에 기준 시각이 없다. 확인 시각은 화면을 보고 다시 정한다 |
 | 2026-10-29 | 좌표는 POST 본문으로 서버에 보낸다 | 주소(쿼리)에 넣으면 서버 접근 로그에 남을 수 있다 |
 | 2026-10-29 | `libSrch`, `libSrchByBook`은 `'use cache: remote'`로 하루 캐시하고, 실패는 캐시하지 않는다. `bookExist`는 캐시하지 않는다 | 기본 `'use cache'`는 서버리스 인스턴스마다 따로라서 호출이 늘 수 있다. Vercel Hobby라 과금되지 않는다 |
+| 2026-11-03 | 전국 도서관 좌표(`libSrch`)는 런타임에 부르지 않고 `src/server/data4library/libraryDirectory.json`에 두고 `npm run update:libraries`로 갱신한다(한 번에 17건, 한 달에 한 번쯤). 10-29의 "`libSrch` 하루 캐시"를 대체한다. `libSrchByBook` 캐시는 그대로 | 사용자 결정. 캐시가 빈 첫 검색에 `libSrch` 17건이 더해져 약 25건이 들었다. 좌표 파일로 바꾸면 검색당 6~8건이고, 시도 경계 근처 이웃 시도 찾기도 그대로 된다 |
 
 ## 10. 미결 사항
 
 - **Q3. 지도를 움직이면 그 지역으로 다시 검색할지**: 다음 버전(지도)에서 API 한도 확인 후 결정
-- ~~Q4. 위치 → 지역 코드 변환 방법~~: `libSrch` 좌표로 정하기로 결정 (9장)
+- ~~Q4. 위치 → 지역 코드 변환 방법~~: `libSrch` 좌표로 정하기로 결정, 좌표는 정적 파일로 둔다 (9장)
 - ~~Q5. 배포처~~: Vercel Hobby로 결정 (9장)
