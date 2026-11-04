@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { use } from "react";
 import { parseSearchScope } from "@/lib/searchScope";
+import { BackIcon } from "./BackIcon";
 import { SearchResults } from "./SearchResults";
 import { SearchScopeOptions } from "./SearchScopeOptions";
 
@@ -20,7 +21,7 @@ export function SearchView({ searchParams }: { searchParams: Promise<Record<stri
         <form action="/search" method="get" className="grid gap-3">
           <div className="flex items-center gap-2">
             <Link href="/" aria-label="뒤로" className="icon-btn">
-              ←
+              <BackIcon />
             </Link>
             <label htmlFor="q" className="sr-only">
               검색어
