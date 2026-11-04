@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { isFavoriteBook } from "@/lib/favorites";
 import { FAVORITES_SAVE_FAILED, SEARCH_FAILED, searchEmpty } from "@/lib/messages";
+import type { SearchScope } from "@/lib/searchScope";
 import type { BookSummary } from "@/lib/types";
 import { useFavorites } from "@/lib/useFavorites";
 import { PAGE_SIZE, type SearchResponse } from "@/server/searchBooks";
@@ -14,21 +15,21 @@ type State =
   | { status: "ok"; total: number; books: BookSummary[]; page: number; more: "idle" | "loading" | "error" };
 
 /** 우리 서버(/api/books)를 부른다. 이미 변환된 앱 내부 타입만 받는다 */
-async function fetchPage(keyword: string, page: number) {
-  const res = await fetch(`/api/books?${new URLSearchParams({ q: keyword, page: String(page) })}`);
+async function fetchPage(keyword: string, scope: SearchScope, page: number) {
+  const res = await fetch(`/api/books?${new URLSearchParams({ q: keyword, by: scope, page: String(page) })}`);
   const body = (await res.json()) as SearchResponse;
   if (!res.ok || "error" in body) throw new Error("search failed");
   return body;
 }
 
-export function SearchResults({ keyword }: { keyword: string }) {
+export function SearchResults({ keyword, scope }: { keyword: string; scope: SearchScope }) {
   const [state, setState] = useState<State>({ status: "loading" });
   const { favorites, addBook, removeBook } = useFavorites();
   const [saveFailed, setSaveFailed] = useState(false);
 
   const loadFirst = useCallback(() => {
     let cancelled = false;
-    fetchPage(keyword, 1).then(
+    fetchPage(keyword, scope, 1).then(
       ({ total, books, page }) => {
         if (!cancelled) setState({ status: "ok", total, books, page, more: "idle" });
       },
@@ -39,7 +40,7 @@ export function SearchResults({ keyword }: { keyword: string }) {
     return () => {
       cancelled = true;
     };
-  }, [keyword]);
+  }, [keyword, scope]);
 
   useEffect(loadFirst, [loadFirst]);
 
@@ -52,7 +53,7 @@ export function SearchResults({ keyword }: { keyword: string }) {
     if (state.status !== "ok") return;
     const next = state.page + 1;
     setState({ ...state, more: "loading" });
-    fetchPage(keyword, next).then(
+    fetchPage(keyword, scope, next).then(
       ({ books }) =>
         setState((prev) => {
           if (prev.status !== "ok") return prev;
@@ -87,7 +88,7 @@ export function SearchResults({ keyword }: { keyword: string }) {
   }
 
   if (state.books.length === 0) {
-    return <p className="p-6 text-center opacity-70">{searchEmpty(keyword)}</p>;
+    return <p className="p-6 text-center opacity-70">{searchEmpty(keyword, scope)}</p>;
   }
 
   const hasMore = state.page * PAGE_SIZE < state.total;

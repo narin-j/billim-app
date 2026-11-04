@@ -1,6 +1,7 @@
 // 화면 문구. docs/spec.md 6장과 같게 유지한다
 
 import type { LocationResult } from "./location";
+import { SEARCH_SCOPE_LABEL, type SearchScope } from "./searchScope";
 import type { Availability } from "./types";
 
 export const LOCATION_NEEDED = "내 위치를 알아야 가까운 도서관을 찾을 수 있어요.";
@@ -17,8 +18,8 @@ export const FAVORITES_DEVICE_ONLY = "즐겨찾기는 이 기기의 이 브라�
 export const FAVORITES_EMPTY_BOOKS = "아직 즐겨찾기한 책이 없어요. 검색 결과에서 ☆를 눌러 저장해 보세요.";
 export const FAVORITES_EMPTY_LIBRARIES = "아직 즐겨찾기한 도서관이 없어요. 도서관 상세에서 ☆를 눌러 저장해 보세요.";
 
-export const searchEmpty = (keyword: string) =>
-  `'${keyword}'에 맞는 책을 찾지 못했어요. 제목이나 저자 이름을 바꿔 검색해 보세요.`;
+export const searchEmpty = (keyword: string, scope: SearchScope) =>
+  `${SEARCH_SCOPE_LABEL[scope]} '${keyword}'에 맞는 책을 찾지 못했어요. 검색어나 범위를 바꿔 검색해 보세요.`;
 export const SEARCH_FAILED = "책 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.";
 
 export const NEARBY_EMPTY = "주변 도서관에는 이 책이 없어요.";

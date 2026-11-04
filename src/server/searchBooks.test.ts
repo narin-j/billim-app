@@ -23,7 +23,7 @@ describe("searchBooks", () => {
     const d = deps();
     const res = await searchBooks(params("q=채식주의자&page=2"), d);
 
-    expect(d.call).toHaveBeenCalledWith("srchBooks", { keyword: "채식주의자", pageNo: "2", pageSize: String(PAGE_SIZE) });
+    expect(d.call).toHaveBeenCalledWith("srchBooks", { title: "채식주의자", pageNo: "2", pageSize: String(PAGE_SIZE) });
     expect(res).toEqual({
       status: 200,
       body: { page: 2, total: 1, books: [expect.objectContaining({ isbn13: "9788936433598", coverUrl: null })] },
@@ -33,13 +33,31 @@ describe("searchBooks", () => {
   it("키워드 앞뒤 공백은 지우고 보낸다", async () => {
     const d = deps();
     await searchBooks(params("q=%20한강%20"), d);
-    expect(d.call).toHaveBeenCalledWith("srchBooks", expect.objectContaining({ keyword: "한강" }));
+    expect(d.call).toHaveBeenCalledWith("srchBooks", expect.objectContaining({ title: "한강" }));
+  });
+
+  it.each([
+    ["title", "title"],
+    ["author", "author"],
+    ["publisher", "publisher"],
+  ])("by=%s이면 정보나루 %s 파라미터로만 찾는다", async (by, param) => {
+    const d = deps();
+    await searchBooks(params(`q=한강&by=${by}`), d);
+    expect(d.call).toHaveBeenCalledWith("srchBooks", { [param]: "한강", pageNo: "1", pageSize: String(PAGE_SIZE) });
+  });
+
+  it.each(["", "by=", "by=keyword", "by=all", "by=isbn"])("by가 없거나 모르는 값이면 제목으로 찾고 keyword는 보내지 않는다 (%s)", async (by) => {
+    const d = deps();
+    await searchBooks(params(`q=고래&${by}`), d);
+    expect(d.call).toHaveBeenCalledWith("srchBooks", { title: "고래", pageNo: "1", pageSize: String(PAGE_SIZE) });
   });
 
   it.each([
     ["q 없음", ""],
     ["빈 문자열", "q="],
     ["공백뿐", "q=%20%20%20"],
+    ["저자 범위 공백뿐", "q=%20%20&by=author"],
+    ["출판사 범위 q 없음", "by=publisher"],
   ])("키워드가 비었으면 정보나루를 부르지 않고 400이다 (%s)", async (_, query) => {
     const d = deps();
     await expect(searchBooks(params(query), d)).resolves.toEqual({ status: 400, body: { error: "emptyQuery" } });
@@ -61,6 +79,15 @@ describe("searchBooks", () => {
     expect(d.log).toHaveBeenCalledTimes(1);
     expect(JSON.stringify(d.log.mock.calls)).not.toContain("비밀검색어");
     expect(JSON.stringify(res)).not.toContain("비밀검색어");
+  });
+
+  it("저자 범위로 실패해도 검색어는 응답과 로그에 담지 않는다", async () => {
+    const d = deps({ ok: false, reason: "format" });
+    const res = await searchBooks(params("q=비밀저자&by=author"), d);
+
+    expect(res).toEqual({ status: 502, body: { error: "format" } });
+    expect(JSON.stringify(d.log.mock.calls)).not.toContain("비밀저자");
+    expect(JSON.stringify(res)).not.toContain("비밀저자");
   });
 
   it("응답 구조가 다르면 502 format이다", async () => {
