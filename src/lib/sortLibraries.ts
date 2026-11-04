@@ -1,5 +1,5 @@
 import { distanceKm } from "./distance";
-import type { Availability, LatLng, Library, RankedLibrary } from "./types";
+import type { Availability, LatLng, Library } from "./types";
 
 const AVAILABILITY_ORDER: Record<Availability, number> = {
   available: 0,
@@ -13,9 +13,12 @@ const toTenths = (km: number) => Math.round(km * 10);
 /**
  * 내 위치에서 가까운 순으로 정렬하고 순번을 붙인다.
  * 0.1km 단위로 거리가 같으면 대출 가능 → 대출 중 → 확인 실패 순.
- * 좌표가 없는 도서관은 맨 뒤에 둔다.
+ * 좌표가 없는 도서관은 맨 뒤에 둔다. 넘겨받은 도서관의 다른 필드는 그대로 둔다.
  */
-export function sortLibraries(me: LatLng, libraries: readonly Library[]): RankedLibrary[] {
+export function sortLibraries<T extends Library>(
+  me: LatLng,
+  libraries: readonly T[],
+): (T & { rank: number; distanceKm: number | null })[] {
   return libraries
     .map((library) => ({
       ...library,

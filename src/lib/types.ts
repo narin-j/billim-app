@@ -37,12 +37,6 @@ export type Favorites = {
   libraries: FavoriteLibrary[];
 };
 
-export type RankedLibrary = Library & {
-  /** 1부터 시작하는 순번 */
-  rank: number;
-  /** 내 위치에서의 직선거리(km). 좌표를 모르면 null */
-  distanceKm: number | null;
-};
 
 /** 검색 결과의 책 1권 */
 export type BookSummary = {
@@ -59,4 +53,24 @@ export type BookSearchPage = {
   /** 검색에 맞는 전체 책 수 */
   total: number;
   books: BookSummary[];
+};
+
+/** 정보나루가 주는 도서관 정보 (대출 여부 제외) */
+export type LibraryInfo = {
+  libCode: string;
+  name: string;
+  /** 좌표를 모르면 null */
+  location: LatLng | null;
+  address: string | null;
+  tel: string | null;
+  homepage: string | null;
+};
+
+/** S4 목록의 한 줄. 화면은 거리만 쓰므로 도서관 좌표는 담지 않는다 */
+export type NearbyLibrary = Omit<LibraryInfo, "location"> & {
+  availability: Availability;
+  /** 1부터 시작하는 순번. 쪽이 넘어가도 이어진다 */
+  rank: number;
+  /** 내 위치에서의 직선거리(km). 좌표를 모르면 null */
+  distanceKm: number | null;
 };
