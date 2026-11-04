@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FAVORITES_SAVE_FAILED, formatDistance } from "@/lib/messages";
 import type { Availability, FavoriteLibrary } from "@/lib/types";
 import { AvailabilityStatus } from "./AvailabilityStatus";
+import { StarIcon } from "./StarIcon";
 
 type Props = {
   library: FavoriteLibrary;
@@ -98,7 +99,7 @@ export function LibrarySheet({ library, status, isFavorite, saveFailed = false, 
             aria-label={isFavorite ? "즐겨찾기에서 빼기" : "즐겨찾기에 넣기"}
             className="icon-btn star"
           >
-            {isFavorite ? "★" : "☆"}
+            <StarIcon filled={isFavorite} />
           </button>
           <button type="button" onClick={requestClose} aria-label="닫기" className="icon-btn">
             ×

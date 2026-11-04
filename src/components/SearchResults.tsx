@@ -8,6 +8,7 @@ import type { SearchScope } from "@/lib/searchScope";
 import type { BookSummary } from "@/lib/types";
 import { useFavorites } from "@/lib/useFavorites";
 import { PAGE_SIZE, type SearchResponse } from "@/server/searchBooks";
+import { StarIcon } from "./StarIcon";
 
 type State =
   | { status: "loading" }
@@ -130,7 +131,7 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
                 aria-label={favorite ? `${book.title} 즐겨찾기에서 빼기` : `${book.title} 즐겨찾기에 넣기`}
                 className="icon-btn star"
               >
-                {favorite ? "★" : "☆"}
+                <StarIcon filled={favorite} />
               </button>
             </li>
           );

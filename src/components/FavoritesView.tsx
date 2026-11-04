@@ -12,6 +12,7 @@ import {
 import type { FavoriteLibrary } from "@/lib/types";
 import { useFavorites } from "@/lib/useFavorites";
 import { LibrarySheet } from "./LibrarySheet";
+import { StarIcon } from "./StarIcon";
 
 type Tab = "books" | "libraries";
 
@@ -81,7 +82,7 @@ export function FavoritesView() {
                     aria-label={`${book.title} 즐겨찾기에서 빼기`}
                     className="icon-btn star"
                   >
-                    ★
+                    <StarIcon filled />
                   </button>
                 </li>
               ))}
@@ -109,7 +110,7 @@ export function FavoritesView() {
                   aria-label={`${library.name} 즐겨찾기에서 빼기`}
                   className="icon-btn star"
                 >
-                  ★
+                  <StarIcon filled />
                 </button>
               </li>
             ))}

@@ -6,6 +6,7 @@ import { FAVORITES_SAVE_FAILED } from "@/lib/messages";
 import type { FavoriteBook } from "@/lib/types";
 import { useFavorites } from "@/lib/useFavorites";
 import type { FindBookResponse } from "@/server/findBook";
+import { StarIcon } from "./StarIcon";
 
 /** S4 머리 틀. 책을 모를 때는 "주변 도서관"만 보인다 */
 export function HeaderBar({ title = "주변 도서관", children }: { title?: string; children?: ReactNode }) {
@@ -63,7 +64,7 @@ export function BookHeader({ params }: { params: Promise<{ isbn13: string }> }) 
             aria-label={saved ? `${book.title} 즐겨찾기에서 빼기` : `${book.title} 즐겨찾기에 넣기`}
             className="icon-btn star"
           >
-            {saved ? "★" : "☆"}
+            <StarIcon filled={Boolean(saved)} />
           </button>
         )}
       </HeaderBar>

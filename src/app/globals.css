@@ -180,6 +180,16 @@ body {
   .star {
     color: var(--accent);
   }
+  .star-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: none;
+    stroke: var(--accent);
+  }
+  .star-icon.filled {
+    fill: var(--honey);
+    stroke: var(--honey-edge);
+  }
 
   .field {
     min-height: 48px;
