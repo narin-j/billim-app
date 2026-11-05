@@ -74,6 +74,15 @@ export type LibraryInfo = {
   closed: string | null;
 };
 
+/** 동네 고르기의 한 동네. 대표 지점은 그 동네 도서관 좌표의 중앙값이다 */
+export type Area = {
+  /** 정식 시도 이름 ("서울특별시") */
+  sido: string;
+  /** 시군구 ("노원구", "수원시 장안구"). 시군구가 없는 세종은 시도 이름 */
+  name: string;
+  center: LatLng;
+};
+
 /** S4 목록의 한 줄. 화면은 거리만 쓰므로 도서관 좌표는 담지 않는다 */
 export type NearbyLibrary = Omit<LibraryInfo, "location"> & {
   availability: Availability;
