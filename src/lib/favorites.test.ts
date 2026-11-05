@@ -44,6 +44,8 @@ const library = (libCode: string): FavoriteLibrary => ({
   address: "주소",
   tel: "02-000-0000",
   homepage: null,
+  operatingTime: "평일 09:00 ~ 18:00",
+  closed: "매주 월요일 / 법정공휴일",
 });
 
 describe("즐겨찾기 저장", () => {
@@ -120,6 +122,26 @@ describe("즐겨찾기 저장", () => {
   ])("저장값이 %s이면 빈 목록으로 시작한다", (_, raw) => {
     const storage = memoryStorage({ [FAVORITES_KEY]: raw });
     expect(loadFavorites(storage)).toEqual({ books: [], libraries: [] });
+  });
+
+  it("도서관의 운영 시간과 휴관일도 함께 저장되고 다시 읽힌다", () => {
+    const storage = memoryStorage();
+    addFavoriteLibrary(storage, library("111001"));
+    const [saved] = loadFavorites(storage).libraries;
+    expect(saved.operatingTime).toBe("평일 09:00 ~ 18:00");
+    expect(saved.closed).toBe("매주 월요일 / 법정공휴일");
+  });
+
+  it("운영 시간과 휴관일이 없는 예전 도서관은 버리지 않고 null로 채운다", () => {
+    const old = { libCode: "111001", name: "예전 도서관", address: "주소", tel: null, homepage: null };
+    const storage = memoryStorage({ [FAVORITES_KEY]: JSON.stringify({ books: [], libraries: [old] }) });
+    expect(loadFavorites(storage).libraries).toEqual([{ ...old, operatingTime: null, closed: null }]);
+  });
+
+  it("운영 시간이나 휴관일 모양이 틀리면 그 값만 null로 보고 도서관은 남긴다", () => {
+    const odd = { ...library("111001"), operatingTime: 9, closed: { day: "월" } };
+    const storage = memoryStorage({ [FAVORITES_KEY]: JSON.stringify({ books: [], libraries: [odd] }) });
+    expect(loadFavorites(storage).libraries).toEqual([{ ...library("111001"), operatingTime: null, closed: null }]);
   });
 
   it("저장소가 막혀 있어도 멈추지 않고 실패를 알려 준다", () => {

@@ -18,7 +18,7 @@ export function loadFavorites(storage: FavoritesStorage): Favorites {
     if (!isRecord(parsed)) return empty();
     return {
       books: arrayOf(parsed.books, isFavoriteBookShape),
-      libraries: arrayOf(parsed.libraries, isFavoriteLibraryShape),
+      libraries: Array.isArray(parsed.libraries) ? parsed.libraries.flatMap(toFavoriteLibrary) : [],
     };
   } catch {
     return empty();
@@ -79,13 +79,24 @@ function isFavoriteBookShape(v: unknown): v is FavoriteBook {
   );
 }
 
-function isFavoriteLibraryShape(v: unknown): v is FavoriteLibrary {
-  return (
-    isRecord(v) &&
-    typeof v.libCode === "string" &&
-    typeof v.name === "string" &&
-    isStringOrNull(v.address) &&
-    isStringOrNull(v.tel) &&
-    isStringOrNull(v.homepage)
-  );
+/**
+ * 모양이 맞지 않는 도서관은 버린다(빈 배열).
+ * 운영 시간과 휴관일은 나중에 생긴 값이라, 없거나 모양이 틀려도 도서관은 남기고 null로 채운다
+ */
+function toFavoriteLibrary(v: unknown): FavoriteLibrary[] {
+  if (
+    !isRecord(v) ||
+    typeof v.libCode !== "string" ||
+    typeof v.name !== "string" ||
+    !isStringOrNull(v.address) ||
+    !isStringOrNull(v.tel) ||
+    !isStringOrNull(v.homepage)
+  ) {
+    return [];
+  }
+  const { libCode, name, address, tel, homepage } = v;
+  const stringOrNull = (x: unknown) => (typeof x === "string" ? x : null);
+  return [
+    { libCode, name, address, tel, homepage, operatingTime: stringOrNull(v.operatingTime), closed: stringOrNull(v.closed) },
+  ];
 }

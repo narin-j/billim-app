@@ -29,6 +29,10 @@ export type FavoriteLibrary = {
   address: string | null;
   tel: string | null;
   homepage: string | null;
+  /** 운영 시간 원문. 이 값이 생기기 전에 저장한 즐겨찾기는 null */
+  operatingTime: string | null;
+  /** 휴관일 원문. 이 값이 생기기 전에 저장한 즐겨찾기는 null */
+  closed: string | null;
 };
 
 /** 최근에 넣은 것이 앞에 온다 */
@@ -64,6 +68,10 @@ export type LibraryInfo = {
   address: string | null;
   tel: string | null;
   homepage: string | null;
+  /** 운영 시간 원문 ("평일 09:00 ~ 18:00"). 형식이 도서관마다 달라 해석하지 않는다 */
+  operatingTime: string | null;
+  /** 휴관일 원문 ("매주 월요일 / 법정공휴일") */
+  closed: string | null;
 };
 
 /** S4 목록의 한 줄. 화면은 거리만 쓰므로 도서관 좌표는 담지 않는다 */

@@ -75,6 +75,8 @@ describe("toLibraries", () => {
           address: "서울특별시 노원구 동일로 1405",
           tel: "070-4158-9660",
           homepage: "https://www.nowonlib.kr/",
+          operatingTime: "평일 09:00 ~ 18:00",
+          closed: "매주 토요일, 일요일 / 법정공휴일",
           location: { lat: 37.6538195, lng: 127.0602181 },
         },
         {
@@ -83,6 +85,8 @@ describe("toLibraries", () => {
           address: "서울특별시 송파구 양재대로 932",
           tel: "02-3435-0950",
           homepage: "http://www.splib.or.kr/spalib/",
+          operatingTime: "09:00 ~ 18:00",
+          closed: "매주 월요일 / 법정공휴일, 기타 도서관 사정에 의해 관장이 정한 날",
           location: { lat: 37.492994, lng: 127.112326 },
         },
       ],
@@ -102,6 +106,25 @@ describe("toLibraries", () => {
     expect(library.tel).toBeNull();
     expect(library.homepage).toBeNull();
     expect(library.address).toBeNull();
+  });
+
+  it("운영 시간과 휴관일은 앞뒤 공백만 지우고 원문 그대로 담는다", () => {
+    const library = first({ operatingTime: "  평일 09:00~22:00 / 주말 09:00~18:00 ", closed: " 매주 월요일 / 법정공휴일 " });
+    expect(library.operatingTime).toBe("평일 09:00~22:00 / 주말 09:00~18:00");
+    expect(library.closed).toBe("매주 월요일 / 법정공휴일");
+  });
+
+  it.each([
+    ["빈 문자열", ""],
+    ["공백만", "   "],
+    ["'-' (2026-11-05 서울 66곳)", "-"],
+    ["없음", undefined],
+    ["숫자", 9],
+    ["객체", {}],
+  ])("운영 시간과 휴관일을 읽을 수 없으면 null이다 (%s)", (_, value) => {
+    const library = first({ operatingTime: value, closed: value });
+    expect(library.operatingTime).toBeNull();
+    expect(library.closed).toBeNull();
   });
 
   it("libCode가 없는 항목은 빼고, 같은 libCode는 처음 것만 남긴다", () => {
