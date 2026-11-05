@@ -1,14 +1,17 @@
-// 전국 도서관 좌표 파일(libraryDirectory.json)을 다시 만든다. libSrch를 시도마다 1번, 모두 17번 부른다.
+// 전국 도서관 좌표 파일(libraryDirectory.json)과 동네 파일(areaDirectory.json)을 다시 만든다.
+// libSrch를 시도마다 1번, 모두 17번 부른다.
 // 실행: npm run update:libraries (키는 .env.local의 DATA4LIBRARY_API_KEY)
 // 시도 하나라도 실패하면 파일을 쓰지 않는다. 키가 든 주소와 오류 원문은 출력하지 않는다.
 import { writeFile } from "node:fs/promises";
 import { REGION_CODES } from "../src/server/data4library/regionCodes.ts";
 import { readError } from "../src/server/data4library/readError.ts";
+import { toAreas } from "../src/server/data4library/toAreas.ts";
 import { toLibraries } from "../src/server/data4library/toLibraries.ts";
 
 const BASE_URL = "http://data4library.kr/api/libSrch";
 const PAGE_SIZE = 500;
 const OUT = new URL("../src/server/data4library/libraryDirectory.json", import.meta.url);
+const AREAS_OUT = new URL("../src/lib/areaDirectory.json", import.meta.url);
 
 const apiKey = process.env.DATA4LIBRARY_API_KEY;
 if (!apiKey) {
@@ -45,8 +48,9 @@ async function fetchRegion(region) {
     throw new Error(`${region}: ${converted.total}곳 중 ${converted.libraries.length}곳만 왔습니다`);
   }
 
-  return converted.libraries.map(({ location }) => ({
+  return converted.libraries.map(({ address, location }) => ({
     region,
+    address,
     location: location && { lat: round(location.lat), lng: round(location.lng) },
   }));
 }
@@ -59,6 +63,12 @@ for (const region of REGION_CODES) {
 }
 
 // 한 줄에 한 곳씩 써서 갱신 diff를 읽기 쉽게 한다
-const json = `[\n${entries.map((e) => "  " + JSON.stringify(e)).join(",\n")}\n]\n`;
-await writeFile(OUT, json);
+const lines = (rows) => `[\n${rows.map((e) => "  " + JSON.stringify(e)).join(",\n")}\n]\n`;
+
+// 좌표 파일에는 주소를 담지 않는다 (서버가 거리 계산에만 쓴다)
+await writeFile(OUT, lines(entries.map(({ region, location }) => ({ region, location }))));
 console.log(`합계 ${entries.length}곳 → ${OUT.pathname}`);
+
+const areas = toAreas(entries);
+await writeFile(AREAS_OUT, lines(areas));
+console.log(`동네 ${areas.length}개 → ${AREAS_OUT.pathname}`);
