@@ -129,6 +129,10 @@ export function LibrarySheet({ library, status, isFavorite, saveFailed = false, 
               "정보 없음"
             )}
           </dd>
+          <dt className="text-muted">운영 시간</dt>
+          <dd>{library.operatingTime ?? "정보 없음"}</dd>
+          <dt className="text-muted">휴관일</dt>
+          <dd>{library.closed ?? "정보 없음"}</dd>
         </dl>
         {library.homepage && (
           <a href={library.homepage} target="_blank" rel="noopener noreferrer" className="btn btn-primary">

@@ -42,6 +42,8 @@ export function toLibraries(body: unknown): ToLibrariesResult {
       address: text(lib.address),
       tel: text(lib.tel),
       homepage: text(lib.homepage),
+      operatingTime: text(lib.operatingTime),
+      closed: text(lib.closed),
       location: toLocation(lib.latitude, lib.longitude),
     });
   }

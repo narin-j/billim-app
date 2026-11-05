@@ -31,12 +31,14 @@ async function fetchPage(isbn13: string, me: LatLng, page: number): Promise<Load
 }
 
 /** 즐겨찾기에는 도서관 정보만 저장한다. 거리와 대출 여부는 그때그때 바뀐다 */
-const toFavorite = ({ libCode, name, address, tel, homepage }: NearbyLibrary): FavoriteLibrary => ({
+const toFavorite = ({ libCode, name, address, tel, homepage, operatingTime, closed }: NearbyLibrary): FavoriteLibrary => ({
   libCode,
   name,
   address,
   tel,
   homepage,
+  operatingTime,
+  closed,
 });
 
 const formatTime = (iso: string) =>

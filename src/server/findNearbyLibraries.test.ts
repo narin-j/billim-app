@@ -15,6 +15,8 @@ const holder = (libCode: string, dLat: number | null): LibraryInfo => ({
   address: null,
   tel: null,
   homepage: null,
+  operatingTime: null,
+  closed: null,
   location: dLat === null ? null : { lat: ME.lat + dLat, lng: ME.lng },
 });
 
