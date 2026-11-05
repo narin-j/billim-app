@@ -91,6 +91,9 @@ body {
   background-color: var(--background);
   background-image: var(--knit);
   color: var(--foreground);
+  /* 한글은 단어 단위로 줄을 바꾼다. 공백 없이 긴 이름(서울특별시교육청…도서관)이 칸을 넘칠 때만 단어 안에서 끊는다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 @layer components {
@@ -268,6 +271,15 @@ body {
     background: var(--warn-bg);
   }
 
+  /* 불러오는 중 회색 틀. 천천히 숨 쉬듯 옅어졌다 진해진다 */
+  .skeleton {
+    display: block;
+    border-radius: 999px;
+    background: var(--line);
+    opacity: 0.55;
+    animation: breathe 1.4s ease-in-out infinite;
+  }
+
   /* 저장 실패 같은 안내 */
   .notice {
     border-radius: 16px;
@@ -323,6 +335,11 @@ html:has(.sheet[open]) {
     transform: translateY(100%);
   }
 }
+@keyframes breathe {
+  50% {
+    opacity: 0.3;
+  }
+}
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -341,6 +358,7 @@ html:has(.sheet[open]) {
   .card-tap {
     transition: none;
   }
+  .skeleton,
   .sheet[open],
   .sheet[open]::backdrop,
   .sheet.closing,

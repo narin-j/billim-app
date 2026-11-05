@@ -10,6 +10,7 @@ import type { SearchScope } from "@/lib/searchScope";
 import type { BookSummary } from "@/lib/types";
 import { useFavorites } from "@/lib/useFavorites";
 import { PAGE_SIZE, type SearchResponse } from "@/server/searchBooks";
+import { BookListSkeleton } from "./Skeleton";
 import { StarIcon } from "./StarIcon";
 
 type State =
@@ -110,7 +111,7 @@ export function SearchResults({ keyword, scope }: { keyword: string; scope: Sear
   };
 
   if (state.status === "loading") {
-    return <p className="p-6 text-center text-muted">책을 찾고 있어요…</p>;
+    return <BookListSkeleton label="책을 찾고 있어요…" />;
   }
 
   if (state.status === "error") {

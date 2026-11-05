@@ -9,6 +9,7 @@ import { useFavorites } from "@/lib/useFavorites";
 import type { NearbyResponse } from "@/server/findNearbyLibraries";
 import { AvailabilityStatus } from "./AvailabilityStatus";
 import { LibrarySheet } from "./LibrarySheet";
+import { LibraryListSkeleton } from "./Skeleton";
 
 type Loaded = Extract<NearbyResponse, { libraries: unknown }>;
 
@@ -92,7 +93,7 @@ export function NearbyLibraries({ isbn13, me }: { isbn13: string; me: LatLng }) 
   };
 
   if (state.status === "loading") {
-    return <p className="p-6 text-center text-muted">주변 도서관을 확인하고 있어요…</p>;
+    return <LibraryListSkeleton label="주변 도서관을 확인하고 있어요…" />;
   }
 
   if (state.status === "error") {
